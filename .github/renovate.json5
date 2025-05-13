@@ -3,24 +3,28 @@
   extends: [
     'github>scottames/renovate:default.json5',
   ],
-  "customManagers": [
+  customManagers: [
     {
-      "customType": "regex",
-      "fileMatch": ["ghostty/.*\\.spec$"],
-      "matchStrings": [
-        "Version:\\s*(?<currentValue>\\S+)"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/ghostty/.*\\.spec$/',
       ],
-      "depNameTemplate": "ghostty-org/ghostty",
-      "datasourceTemplate": "github-releases"
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'ghostty-org/ghostty',
+      datasourceTemplate: 'github-releases',
     },
     {
-      "customType": "regex",
-      "fileMatch": ["zen-browser/.*\\.spec$"],
-      "matchStrings": [
-        "Version:\\s*(?<currentValue>\\S+)"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/zen-browser/.*\\.spec$/',
       ],
-      "depNameTemplate": "zen-browser/desktop",
-      "datasourceTemplate": "github-releases"
-    }
-  ]
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'zen-browser/desktop',
+      datasourceTemplate: 'github-releases',
+    },
+  ],
 }
