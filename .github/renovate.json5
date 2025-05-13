@@ -1,0 +1,28 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'github>scottames/renovate:default.json5',
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^ghostty/.*\\.spec$"],
+      "matchStrings": [
+        "^Version:\\s*(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "ghostty-org/ghostty",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^zen-browser/.*\\.spec$"],
+      "matchStrings": [
+        "^Version:\\s*(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "zen-browser/desktop",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    }
+  ]
+}
