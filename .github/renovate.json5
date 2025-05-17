@@ -18,6 +18,50 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/hypr/hypridle\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hypridle',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/hypr/hyprlock\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprlock',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/hypr/hyprpaper\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprpaper',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/hypr/hyprpicker\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprpicker',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/zen-browser/.*\\.spec$/',
       ],
       matchStrings: [
