@@ -11,7 +11,7 @@
 
 ### Bugs
 
-- Bugs related to the Zen Browser application should be reported to the [ghostty-org GitHub org](https://github.com/ghostty-org/ghostty/issues)
+- Bugs related to Ghostty application should be reported to the [ghostty-org GitHub org](https://github.com/ghostty-org/ghostty/issues)
 - Bugs related to this package should be reported to [this Git project](https://github.com/scottames/copr/issues)
 
 ## Installation

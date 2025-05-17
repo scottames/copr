@@ -58,6 +58,9 @@ zig build \
     -Dpie=true \
     -Demit-docs
 
+%if 0%{?fedora} == 42
+    rm -f "%{buildroot}%{_prefix}/share/terminfo/g/ghostty"
+%endif
 
 %files
 %license LICENSE
@@ -92,7 +95,7 @@ zig build \
 %{_prefix}/share/zsh/site-functions/_ghostty
 
 %{_prefix}/share/terminfo/x/xterm-ghostty
-%if ! (0%{?fedora} == 42)
+%if 0%{?fedora} != 42
     %{_prefix}/share/terminfo/g/ghostty
 %endif
 
