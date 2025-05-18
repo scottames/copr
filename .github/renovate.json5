@@ -40,6 +40,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/hypr/hyprland-protocols\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprland-protocols',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/hypr/hyprlock\\.spec$/',
       ],
       matchStrings: [
