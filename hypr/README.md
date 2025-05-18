@@ -2,7 +2,7 @@
 
 [![⚡️Powered By: Copr](https://img.shields.io/badge/⚡️_Powered_by-COPR-blue?style=flat-square)](https://copr.fedorainfracloud.org/)
 
-!> [!NOTE]
+> [!NOTE]
 > Packages forked from [solopasha/hyprlandRPM](https://github.com/solopasha/hyprlandRPM)
 >
 > - It is highly recommended to use
