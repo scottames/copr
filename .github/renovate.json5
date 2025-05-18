@@ -3,10 +3,12 @@
   extends: [
     'github>scottames/renovate:default.json5',
   ],
+  schedule: ['* 22 * * *'], // Run every day at 2pm PST (10pm UTC)
+  automerge: true,
   customManagers: [
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/ghostty/.*\\.spec$/',
       ],
       matchStrings: [
@@ -17,7 +19,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hypridle\\.spec$/',
       ],
       matchStrings: [
@@ -28,7 +30,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hyprgraphics\\.spec$/',
       ],
       matchStrings: [
@@ -39,7 +41,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hyprlang\\.spec$/',
       ],
       matchStrings: [
@@ -50,7 +52,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hyprland-protocols\\.spec$/',
       ],
       matchStrings: [
@@ -61,7 +63,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hyprlock\\.spec$/',
       ],
       matchStrings: [
@@ -72,7 +74,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hyprpaper\\.spec$/',
       ],
       matchStrings: [
@@ -83,7 +85,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hyprpicker\\.spec$/',
       ],
       matchStrings: [
@@ -94,7 +96,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/hypr/hyprutils\\.spec$/',
       ],
       matchStrings: [
@@ -105,7 +107,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
+      fileMatch: [
         '/zen-browser/.*\\.spec$/',
       ],
       matchStrings: [
