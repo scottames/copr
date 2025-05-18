@@ -29,6 +29,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/hypr/hyprgraphics\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprgraphics',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/hypr/hyprlang\\.spec$/',
       ],
       matchStrings: [
