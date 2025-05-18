@@ -73,6 +73,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/hypr/hyprutils\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprutils',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/zen-browser/.*\\.spec$/',
       ],
       matchStrings: [
