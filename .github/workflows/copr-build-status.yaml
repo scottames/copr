@@ -12,7 +12,7 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix_from_changed_spec_files.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Find changed spec files
         id: changed_specs
