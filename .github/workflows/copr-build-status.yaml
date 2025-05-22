@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Get changed spec files
         id: changed_specs
-        uses: step-security/changed-files@v46.0.5
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46.0.5
         with:
           files: |
             */*.spec
