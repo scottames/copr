@@ -4,7 +4,7 @@
     'github>scottames/renovate:default.json5',
   ],
   schedule: [
-    '* * * * *',
+    '* * * * *', // explicitly unrestricted
   ],
   automerge: true,
   customManagers: [
