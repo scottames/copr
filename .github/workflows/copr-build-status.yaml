@@ -1,3 +1,4 @@
+---
 # monitor copr builds on changes merged to main
 name: copr build status
 on:
@@ -5,7 +6,8 @@ on:
     branches: [main]
     paths:
       - "*/*.spec"
-
+permissions:
+  contents: read # required for actions/checkout
 jobs:
   matrix_from_changed_specs:
     runs-on: ubuntu-latest
@@ -13,33 +15,73 @@ jobs:
       matrix: ${{ steps.matrix_from_changed_spec_files.outputs.matrix }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Find changed spec files
+      - name: Get changed spec files
         id: changed_specs
-        run: |
-          SPEC_FILES=$(git diff --name-only main...HEAD -- '*/*.spec')
-          if [ -z "$SPEC_FILES" ]; then
-            echo "::notice::No spec files changed in this commit"
-            exit 0
-          fi
-          echo "::debug::Changed spec files: $SPEC_FILES"
-          echo "changed_specs=${SPEC_FILES}" >> $GITHUB_OUTPUT
-
+        uses: step-security/changed-files@v46.0.5
+        with:
+          files: |
+            */*.spec
       - name: Create package matrix
         id: matrix_from_changed_spec_files
+        # yamllint disable rule:line-length
         run: |
-          # Extract project/package from paths (structure: <project>/<package>.spec)
-          MATRIX_JSON=$(echo "${{ steps.changed_specs.outputs.changed_specs }}" | \
-            xargs -n1 sh -c 'echo "$0" | sed -E "s|([^/]+)/([^/]+)\.spec|{\"project\":\"\1\",\"package\":\"\2\"}|"')
+          MATRIX_JSON=""
+          # used to ensure unique "project:package" strings, newline-separated
+          SEEN_COMBINATIONS=""
+
+          for spec_file in ${{ steps.changed_specs.outputs.all_changed_files }}; do
+            # Skip if spec_file is empty (e.g. if there were extra spaces in the input)
+            if [ -z "$spec_file" ]; then
+              continue
+            fi
+
+            COPR_PROJECT="$(dirname "$spec_file")"
+            # Remove potential ./ prefix if present
+            #   (e.g. if find results included it)
+            COPR_PROJECT="${COPR_PROJECT#./}"
+
+            # Extract package name from the 'Name:' field in the spec file
+            # Using grep -Po for Perl-compatible regex to get only the matched
+            # group. Assumes 'Name:' is at the beginning of a line.
+            COPR_PACKAGE_NAME="$(grep -Po '^Name:\s*\K[^[:space:]]+' "$spec_file")"
+
+            if [ -z "${COPR_PACKAGE_NAME}" ]; then
+              echo "::warning file=$spec_file::Could not extract package name from $spec_file"
+              continue # Skip this file if package name couldn't be extracted
+            fi
+
+            COMBO_KEY="${COPR_PROJECT}:${COPR_PACKAGE_NAME}"
+            CURRENT_JSON="{\"project\":\"${COPR_PROJECT}\",\"package\":\"${COPR_PACKAGE_NAME}\"}"
+
+            # Check if this combination has been seen before
+            # grep -qxF: q (quiet), x (exact line match), F (fixed string)
+            if ! echo "${SEEN_COMBINATIONS}" | grep -qxF "${COMBO_KEY}"; then
+              # If new, add to SEEN_COMBINATIONS and append to MATRIX_JSON
+              # Add with a newline for exact matching
+              SEEN_COMBINATIONS="${SEEN_COMBINATIONS}${COMBO_KEY}"$'\n'
+              if [ -z "${MATRIX_JSON}" ]; then
+                MATRIX_JSON="${CURRENT_JSON}"
+              else
+                MATRIX_JSON="${MATRIX_JSON},${CURRENT_JSON}"
+              fi
+            fi
+          done
 
           echo "::group::Generated build matrix"
-          echo "$MATRIX_JSON"
+          echo "Final MATRIX_JSON string: ${MATRIX_JSON}"
           echo "::endgroup::"
 
-          echo "matrix={\"include\":[${MATRIX_JSON//$'\n'/,}]}" >> $GITHUB_OUTPUT
-
+          # If MATRIX_JSON is empty, output an empty include list
+          # otherwise, output the list of JSON objects
+          if [ -z "${MATRIX_JSON}" ]; then
+            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
+          else
+            echo "matrix={\"include\":[$MATRIX_JSON]}" >> $GITHUB_OUTPUT
+          fi
+        # yamllint enable rule:line-length
   monitor-builds:
     needs: matrix_from_changed_specs
+    if: needs.matrix_from_changed_specs.outputs.matrix != '{"include":[]}'
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.matrix_from_changed_specs.outputs.matrix) }}
@@ -50,30 +92,30 @@ jobs:
           echo "::group::Installing COPR CLI dependencies"
           python3 -m pip install copr-cli
           echo "::endgroup::"
-
       - name: Monitor COPR build status
         env:
           COPR_API_TOKEN: ${{ secrets.COPR_API_TOKEN }}
+        # yamllint disable rule:line-length
         run: |
+          set -x
           echo "::notice file=${{ matrix.project }}/${{ matrix.package }}.spec::Monitoring builds for ${{ matrix.project }}/${{ matrix.package }}"
 
-          LATEST_BUILD_ID=$(copr-cli get-package ${{ matrix.project }} ${{ matrix.package }} | jq -r '.latest_build_id')
-          echo "::debug::Build ID: $LATEST_BUILD_ID"
+          LATEST_BUILD_ID="$(copr-cli get-package ${{ matrix.project }} --name ${{ matrix.package }} | jq -r '.latest_build_id')"
+          echo "::debug::Build ID: ${LATEST_BUILD_ID}"
 
           for i in {1..30}; do
-            STATUS=$(copr-cli get-build-status $LATEST_BUILD_ID | jq -r '.status')
-            
-            case $STATUS in
+            STATUS="$(copr-cli get-build-status "${LATEST_BUILD_ID}" | jq -r '.status')"
+            case "${STATUS}" in
               "succeeded")
                 echo "::notice file=${{ matrix.project }}/${{ matrix.package }}.spec,title=Build Success::Package ${{ matrix.package }} built successfully!"
                 exit 0
                 ;;
               "failed"|"canceled")
-                echo "::error file=${{ matrix.project }}/${{ matrix.package }}.spec,title=Build Failure::Build failed for ${{ matrix.package }} (Status: $STATUS)"
+                echo "::error file=${{ matrix.project }}/${{ matrix.package }}.spec,title=Build Failure::Build failed for ${{ matrix.package }} (Status: ${STATUS})"
                 exit 1
                 ;;
               *)
-                echo "::debug::Current status: $STATUS - Polling again in 2 minutes..."
+                echo "::debug::Current status: ${STATUS} - Polling again in 2 (${i}) minutes..."
                 sleep 120
                 ;;
             esac
@@ -81,3 +123,4 @@ jobs:
 
           echo "::error file=${{ matrix.project }}/${{ matrix.package }}.spec,title=Build Timeout::Build monitoring timed out after 60 minutes"
           exit 1
+        # yamllint enable rule:line-length
