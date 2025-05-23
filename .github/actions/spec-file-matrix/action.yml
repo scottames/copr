@@ -1,0 +1,73 @@
+---
+name: Create Spec File Matrix
+description: Creates a build matrix from changed spec files
+inputs:
+  changed_files:
+    description: Space-separated list of changed spec files
+    required: false
+    default: ""
+  manual_spec_file:
+    description: Manually specified spec file (overrides changed_files)
+    required: false
+    default: ""
+outputs:
+  matrix:
+    description: JSON matrix for build jobs
+    value: ${{ steps.matrix.outputs.matrix }}
+runs:
+  using: composite
+  steps:
+    - name: Create package matrix
+      id: matrix
+      shell: bash
+      run: |
+        set -euo pipefail
+        MATRIX_JSON=""
+        SEEN_COMBINATIONS=""
+
+        MANUAL_SPEC_FILE="${{ inputs.manual_spec_file }}"
+
+        if [ -n "${MANUAL_SPEC_FILE}" ]; then
+          echo "::notice::Using manually specified spec file: ${MANUAL_SPEC_FILE}"
+          SPEC_FILES="${MANUAL_SPEC_FILE}"
+        else
+          SPEC_FILES="${{ inputs.changed_files }}"
+        fi
+
+        for SPEC_FILE in ${SPEC_FILES}; do
+          if [ -z "$SPEC_FILE" ]; then
+            continue
+          fi
+
+          PROJECT="$(dirname "$SPEC_FILE")"
+          PROJECT="${PROJECT#./}"
+
+          PACKAGE_NAME="$(grep -Po '^Name:\s*\K[^[:space:]]+' "$SPEC_FILE")"
+
+          if [ -z "${PACKAGE_NAME}" ]; then
+            echo "::warning file=$SPEC_FILE::Could not extract package name from $SPEC_FILE"
+            continue
+          fi
+
+          COMBO_KEY="${PROJECT}:${PACKAGE_NAME}"
+          CURRENT_JSON="{\"project\":\"${PROJECT}\",\"package\":\"${PACKAGE_NAME}\",\"spec_file\":\"${SPEC_FILE}\"}"
+
+          if ! echo "${SEEN_COMBINATIONS}" | grep -qxF "${COMBO_KEY}"; then
+            SEEN_COMBINATIONS="${SEEN_COMBINATIONS}${COMBO_KEY}"$'\n'
+            if [ -z "${MATRIX_JSON}" ]; then
+              MATRIX_JSON="${CURRENT_JSON}"
+            else
+              MATRIX_JSON="${MATRIX_JSON},${CURRENT_JSON}"
+            fi
+          fi
+        done
+
+        echo "::group::Generated build matrix"
+        echo "Final MATRIX_JSON string: ${MATRIX_JSON}"
+        echo "::endgroup::"
+
+        if [ -z "${MATRIX_JSON}" ]; then
+          echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
+        else
+          echo "matrix={\"include\":[$MATRIX_JSON]}" >> $GITHUB_OUTPUT
+        fi
