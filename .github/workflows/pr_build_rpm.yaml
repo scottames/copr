@@ -1,0 +1,152 @@
+---
+name: PR RPM Build Test
+on:
+  pull_request:
+    paths:
+      - "*/*.spec"
+  workflow_dispatch:
+    inputs:
+      spec_file:
+        description: "Spec file to test (format: project/package.spec)"
+        required: false
+        type: string
+permissions:
+  contents: read
+  pull-requests: write
+env:
+  MOCK_IMAGE: ghcr.io/ublue-os/ublue-builder:latest
+jobs:
+  matrix_from_changed_specs:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.spec_matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Get changed spec files
+        id: changed_specs
+        # yamllint disable-line rule:line-length
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46.0.5
+        with:
+          files: |
+            */*.spec
+      - name: Create spec file matrix
+        id: spec_matrix
+        uses: ./.github/actions/spec-file-matrix
+        with:
+          changed_files: ${{ steps.changed_specs.outputs.all_changed_files }}
+          manual_spec_file: ${{ github.event.inputs.spec_file }}
+  build_packages:
+    needs: matrix_from_changed_specs
+    if: needs.matrix_from_changed_specs.outputs.matrix != '{"include":[]}'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.matrix_from_changed_specs.outputs.matrix) }}
+        fedora_version: [41, 42]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            podman \
+            rpm \
+            rpmdevtools \
+            curl
+      - name: Setup build directories
+        run: |
+          mkdir -p {mock,sources,containers}
+          sudo chown -R 1001:1001 mock sources containers
+      - name: Validate spec file
+        # yamllint disable rule:line-length
+        run: |
+          echo "::group::Validating ${{ matrix.spec_file }}"
+          if ! rpmspec -P "${{ matrix.spec_file }}" > /dev/null 2>&1; then
+            echo "::error file=${{ matrix.spec_file }}::Spec file syntax validation failed"
+            exit 1
+          fi
+
+          NAME=$(rpmspec -q --qf "%{NAME}\n" "${{ matrix.spec_file }}" 2>/dev/null | head -1)
+          VERSION=$(rpmspec -q --qf "%{VERSION}\n" "${{ matrix.spec_file }}" 2>/dev/null | head -1)
+          echo "Building $NAME-$VERSION for Fedora ${{ matrix.fedora_version }}"
+          echo "::endgroup::"
+      - name: Copy spec and sources to build directory
+        run: |
+          # Copy spec file to sources directory with expected naming
+          cp "${{ matrix.spec_file }}" "sources/${{ matrix.package }}.spec"
+
+          # Copy any additional source files from the project directory
+          if [ -d "${{ matrix.project }}" ]; then
+            find "${{ matrix.project }}" -type f ! -name "*.spec" -exec cp {} sources/ \;
+          fi
+      - name: Build RPM package
+        run: |
+          set -euo pipefail
+
+          echo "::group::Building ${{ matrix.package }} for Fedora ${{ matrix.fedora_version }}"
+
+          # Run mock build in container following ublue-os pattern
+          sudo podman run --privileged --rm \
+            --pull "newer" \
+            -v "$(pwd)/containers:/var/lib/containers:z" \
+            -v "$(pwd)/mock:/var/lib/mock:Z" \
+            -v "$(pwd)/sources:/tmp/sources:Z" \
+            -e MOCK_ARGS="--enable-network" \
+            -e USERID="$(id -u)" \
+            -e GROUPID="$(id -g)" \
+            -e USERNAME="$(id -un)" \
+            "${{ env.MOCK_IMAGE }}" \
+            "${{ matrix.package }}.spec" \
+            --target "fedora-${{ matrix.fedora_version }}-$(uname -m)"
+
+          echo "::endgroup::"
+      - name: Check build results
+        run: |
+          if [ -d "mock/fedora-${{ matrix.fedora_version }}-$(uname -m)/result" ]; then
+            echo "::notice file=${{ matrix.spec_file }},title=Build Success::✅ ${{ matrix.package }} built successfully for Fedora ${{ matrix.fedora_version }}"
+            ls -la "mock/fedora-${{ matrix.fedora_version }}-$(uname -m)/result/"*.rpm || true
+          else
+            echo "::error file=${{ matrix.spec_file }},title=Build Failed::❌ ${{ matrix.package }} build failed for Fedora ${{ matrix.fedora_version }}"
+            # Show build logs for debugging
+            echo "::group::Build logs"
+            find mock -name "*.log" -exec echo "=== {} ===" \; -exec cat {} \; || true
+            echo "::endgroup::"
+            exit 1
+          fi
+      # yamllint enable rule:line-length
+      - name: Upload build artifacts
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        if: always()
+        with:
+          name: "rpm-${{ matrix.package }}-fedora${{ matrix.fedora_version }}-$(uname -m)"
+          path: |
+            mock/fedora-${{ matrix.fedora_version }}-*/result/*.rpm
+            mock/fedora-${{ matrix.fedora_version }}-*/result/*.log
+          retention-days: 7
+  summary:
+    needs: [matrix_from_changed_specs, build_packages]
+    if: needs.matrix_from_changed_specs.outputs.matrix != '{"include":[]}'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build summary
+        # yamllint disable rule:line-length
+        run: |-
+          # shellcheck disable=SC2086
+          {
+            echo "## 📦 RPM Build Test Results"
+            echo ""
+            echo "Tested spec files using containerized mock builds:"
+            echo ""
+            echo "### Build targets:"
+            echo "- Fedora 41 (x86_64)"
+            echo "- Fedora 42 (x86_64)"
+            echo ""
+            echo "### Build environment:"
+            echo "- Container: \`${{ env.MOCK_IMAGE }}\`"
+            echo "- Mock build system with network access"
+            echo ""
+            echo "Check individual job results and artifacts for build details."
+          } >> $GITHUB_STEP_SUMMARY
+    # yamllint enable rule:line-length

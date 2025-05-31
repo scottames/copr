@@ -1,0 +1,91 @@
+---
+# monitor copr builds on changes merged to main
+name: copr build status
+on:
+  push:
+    branches: [main]
+    paths:
+      - "*/*.spec"
+  workflow_dispatch:
+    inputs:
+      # checkov:skip=CKV_GHA_7:arg passed to env
+      spec_file:
+        description: "Spec file to monitor (format: project/package.spec)"
+        required: false
+        type: string
+permissions:
+  contents: read # required for actions/checkout
+env:
+  COPR_OWNER: scottames
+jobs:
+  matrix_from_changed_specs:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.spec_matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Get changed spec files
+        id: changed_specs
+        # yamllint disable-line rule:line-length
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46.0.5
+        with:
+          files: |
+            */*.spec
+      - name: Create spec file matrix
+        id: spec_matrix
+        uses: ./.github/actions/spec-file-matrix
+        with:
+          changed_files: ${{ steps.changed_specs.outputs.all_changed_files }}
+          manual_spec_file: ${{ github.event.inputs.spec_file }}
+  monitor-builds:
+    needs: matrix_from_changed_specs
+    # yamllint disable-line rule:line-length
+    if: needs.matrix_from_changed_specs.outputs.matrix != '{"include":[]}' || github.event.inputs.spec_file != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_from_changed_specs.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - name: Install copr-cli
+        run: |
+          set -euo pipefail
+          echo "::group::Installing system dependencies"
+          sudo apt-get update
+          sudo apt-get install -y python3-dev libkrb5-dev
+          echo "::endgroup::"
+
+          echo "::group::Installing COPR CLI dependencies"
+          python3 -m pip install copr-cli requests_gssapi
+          echo "::endgroup::"
+      - name: Monitor COPR build status
+        env:
+          COPR_API_TOKEN: ${{ secrets.COPR_API_TOKEN }}
+        # yamllint disable rule:line-length
+        run: |
+          set -euo pipefail
+          echo "::notice file=${{ matrix.project }}/${{ matrix.package }}.spec::Monitoring builds for ${{ matrix.project }}/${{ matrix.package }}"
+
+          LATEST_BUILD_ID="$(copr-cli get-package "${COPR_OWNER}/${{ matrix.project }}" --name ${{ matrix.package }} --with-latest-build | jq -r '.latest_build.id')"
+          echo "::debug::Build ID: ${LATEST_BUILD_ID}"
+
+          for i in {1..30}; do
+            STATUS="$(copr-cli status "${LATEST_BUILD_ID}")"
+            case "${STATUS}" in
+              "succeeded")
+                echo "::notice file=${{ matrix.project }}/${{ matrix.package }}.spec,title=Build Success::Package ${{ matrix.package }} built successfully!"
+                exit 0
+                ;;
+              "failed"|"canceled")
+                echo "::error file=${{ matrix.project }}/${{ matrix.package }}.spec,title=Build Failure::Build failed for ${{ matrix.package }} (Status: ${STATUS})"
+                exit 1
+                ;;
+              *)
+                echo "::debug::Current status: ${STATUS} - Polling again in 2 (${i}) minutes..."
+                sleep 120
+                ;;
+            esac
+          done
+
+          echo "::error file=${{ matrix.project }}/${{ matrix.package }}.spec,title=Build Timeout::Build monitoring timed out after 60 minutes"
+          exit 1
+        # yamllint enable rule:line-length
