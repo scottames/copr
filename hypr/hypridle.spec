@@ -1,7 +1,7 @@
 %global sdbus_version 2.1.0
 
 Name:           hypridle
-Version:        0.1.6
+Version:        0.1.7
 Release:        %autorelease -b3
 Summary:        Hyprland's idle daemon
 License:        BSD-3-Clause
