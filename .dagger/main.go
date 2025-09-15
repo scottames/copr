@@ -36,7 +36,7 @@ func (m *Copr) BuildSpecFile(
 		From(
 			fmt.Sprintf("quay.io/fedora/fedora:%s", fedoraVersion),
 		).
-		WithExec(shC("dnf install -y rpm-build rpmdevtools rpm wget curl ca-certificates")).
+		WithExec(shC("dnf install -y rpm-build rpmdevtools rpm wget curl ca-certificates dnf-plugins-core")).
 		WithMountedDirectory("/workspace", source).
 		WithWorkdir("/workspace")
 
@@ -59,8 +59,11 @@ func (m *Copr) BuildSpecFile(
 		// Download source files specified in the spec
 		WithExec([]string{"spectool", "-g", "-R", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
 
-		// Build the source RPM
-		WithExec([]string{"rpmbuild", "-bs", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
+		// Install build dependencies
+		WithExec([]string{"dnf", "builddep", "-y", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
+
+		// Build the binary RPM
+		WithExec([]string{"rpmbuild", "-bb", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
 		WithExec([]string{"echo", fmt.Sprintf("✓ %s", specFile)}).
 		Stdout(ctx)
 }
