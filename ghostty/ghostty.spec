@@ -17,6 +17,7 @@ BuildRequires: fontconfig-devel
 BuildRequires: freetype-devel
 BuildRequires: glib2-devel
 BuildRequires: gtk4-devel
+BuildRequires: gtk4-layer-shell-devel
 BuildRequires: harfbuzz-devel
 BuildRequires: libadwaita-devel
 BuildRequires: libpng-devel
