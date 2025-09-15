@@ -12,6 +12,7 @@ Source0:        https://github.com/ghostty-org/ghostty/archive/refs/tags/v%{vers
 ExclusiveArch: x86_64 aarch64
 
 
+BuildRequires: blueprint-compiler
 BuildRequires: fontconfig-devel
 BuildRequires: freetype-devel
 BuildRequires: glib2-devel
