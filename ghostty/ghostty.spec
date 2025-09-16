@@ -51,9 +51,9 @@ Requires: zlib-ng
 
 
 %build
-zig build \
+DESTDIR=%{buildroot} zig build \
     --summary all \
-    --prefix "%{buildroot}%{_prefix}" \
+    --prefix "%{_prefix}" \
     -Dversion-string=%{version}-%{release} \
     -Doptimize=ReleaseFast \
     -Dcpu=baseline \
