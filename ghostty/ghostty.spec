@@ -95,6 +95,10 @@ zig build \
 %{_prefix}/share/vim/vimfiles/ftplugin/ghostty.vim
 %{_prefix}/share/vim/vimfiles/syntax/ghostty.vim
 %{_prefix}/share/zsh/site-functions/_ghostty
+%{_prefix}/share/dbus-1/services/com.mitchellh.ghostty.service
+%{_prefix}/share/locale/*/LC_MESSAGES/com.mitchellh.ghostty.mo
+%{_prefix}/share/metainfo/com.mitchellh.ghostty.metainfo.xml
+%{_prefix}/share/systemd/user/app-com.mitchellh.ghostty.service
 
 %{_prefix}/share/terminfo/x/xterm-ghostty
 %if 0%{?fedora} != 42
