@@ -60,7 +60,7 @@ DESTDIR=%{buildroot} zig build \
     -Dpie=true \
     -Demit-docs
 
-%if 0%{?fedora} == 42
+%if 0%{?fedora} >= 42
     rm -f "%{buildroot}%{_prefix}/share/terminfo/g/ghostty"
 %endif
 
