@@ -101,7 +101,7 @@ DESTDIR=%{buildroot} zig build \
 %{_prefix}/share/systemd/user/app-com.mitchellh.ghostty.service
 
 %{_prefix}/share/terminfo/x/xterm-ghostty
-%if 0%{?fedora} != 42
+%if 0%{?fedora} < 42
     %{_prefix}/share/terminfo/g/ghostty
 %endif
 
