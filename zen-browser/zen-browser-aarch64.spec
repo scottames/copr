@@ -45,7 +45,7 @@ Bugs related to this package should be reported at this Git project:
 
 %__cp -r * %{buildroot}/opt/%{application_name}
 
-patchelf --remove-rpath %{buildroot}/opt/%{application_name}/libonnxruntime.so
+[ -f %{buildroot}/opt/%{application_name}/libonnxruntime.so ] && patchelf --remove-rpath %{buildroot}/opt/%{application_name}/libonnxruntime.so
 
 %__install -D -m 0644 %{SOURCE1} -t %{buildroot}%{_datadir}/applications
 
