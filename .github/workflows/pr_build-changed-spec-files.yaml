@@ -30,13 +30,24 @@ jobs:
         # yamllint disable rule:line-length
         run: |
           files="${{ steps.changed-files.outputs.all_changed_files }}"
-          json_array="[$(echo "$files" | sed 's/[^ ]*/\"&\"/g' | sed 's/ /,/g')]"
-          echo "matrix={\"spec-file\":$json_array}" >> "$GITHUB_OUTPUT"
+          json_include="[]"
+          if [ -n "$files" ]; then
+            json_include="["
+            for file in $files; do
+              os="ubuntu-24.04"
+              if [[ "$file" == *aarch64.spec ]] || [[ "$file" == *arm.spec ]]; then
+                os="ubuntu-24.04-arm"
+              fi
+              json_include+=$(printf '{"spec-file":"%s","os":"%s"},' "$file" "$os")
+            done
+            json_include="${json_include%,}]"
+          fi
+          echo "matrix={\"include\":$json_include}" >> "$GITHUB_OUTPUT"
         # yamllint enable rule:line-length
   build-spec:
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
