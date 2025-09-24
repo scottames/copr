@@ -2,8 +2,8 @@
 %global             application_name zen
 %global             debug_package %{nil}
 
-Name:               zen-browser
-Version:            1.15.5b
+Name:               zen-browser-arm
+Version:            1.16b
 Release:            1%{?dist}
 Summary:            Zen Browser
 
@@ -17,14 +17,15 @@ Source3:            %{full_name}
 
 ExclusiveArch:      aarch64
 
+# Needed to fix invalid RPATH/RUNPATH in bundled binaries
+BuildRequires:      patchelf
+
 Recommends:         (plasma-browser-integration if plasma-workspace)
 Recommends:         (gnome-browser-connector if gnome-shell)
 
 Requires(post):     gtk-update-icon-cache
 Conflicts:          zen-browser-avx2
 Conflicts:          zen-browser
-
-BuildRequires:      patchelf
 
 %description
 Zen Browser <https://zen-browser.app> packaged for Fedora Linux.
@@ -45,12 +46,8 @@ Bugs related to this package should be reported at this Git project:
 
 %__cp -r * %{buildroot}/opt/%{application_name}
 
-patchelf --remove-rpath %{buildroot}/opt/%{application_name}/libonnxruntime.so
-
 %__install -D -m 0644 %{SOURCE1} -t %{buildroot}%{_datadir}/applications
-
 %__install -D -m 0444 %{SOURCE2} -t %{buildroot}/opt/%{application_name}/distribution
-
 %__install -D -m 0755 %{SOURCE3} -t %{buildroot}%{_bindir}
 
 %__ln_s ../../../../../../opt/%{application_name}/browser/chrome/icons/default/default128.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{full_name}.png
@@ -59,8 +56,26 @@ patchelf --remove-rpath %{buildroot}/opt/%{application_name}/libonnxruntime.so
 %__ln_s ../../../../../../opt/%{application_name}/browser/chrome/icons/default/default32.png %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{full_name}.png
 %__ln_s ../../../../../../opt/%{application_name}/browser/chrome/icons/default/default16.png %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{full_name}.png
 
+# Fix invalid RUNPATH/RPATH (e.g., literal "$") in bundled ELF files.
+# Policy: prefer $ORIGIN so local libs are discoverable; if that fails,
+# remove the RPATH to satisfy RPM QA.
+bash -euxo pipefail -c '
+  shopt -s nullglob
+  while IFS= read -r -d "" f; do
+    rp=$(patchelf --print-rpath "$f" 2>/dev/null || true)
+    if [ "$rp" = "\$" ]; then
+      if ! patchelf --set-rpath '"'"'$ORIGIN'"'"' "$f" 2>/dev/null; then
+        patchelf --remove-rpath "$f" || true
+      fi
+    fi
+  done < <(find %{buildroot}/opt/%{application_name} \( -type f -a \( -perm -u+x -o -name "*.so*" \) \) -print0)
+'
+
 %post
-gtk-update-icon-cache -f -t %{_datadir}/icons/hicolor
+gtk-update-icon-cache -f -t %{_datadir}/icons/hicolor || :
+
+%postun
+gtk-update-icon-cache -f -t %{_datadir}/icons/hicolor || :
 
 %files
 %{_datadir}/applications/%{full_name}.desktop
