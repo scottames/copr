@@ -36,7 +36,14 @@ func (m *Copr) BuildSpecFile(
 		From(
 			fmt.Sprintf("quay.io/fedora/fedora:%s", fedoraVersion),
 		).
-		WithExec(shC("dnf install -y rpm-build rpmdevtools rpm wget curl ca-certificates dnf-plugins-core")).
+		WithExec(shC("dnf copr enable -y scottames/hypr")).
+		WithExec(shC("dnf copr enable -y scottames/ghostty")).
+		WithExec(shC("dnf copr enable -y scottames/zen-browser")).
+		WithExec([]string{
+			"dnf", "install", "-y",
+			"ca-certificates", "curl", "wget",
+			"dnf-plugins-core", "rpm", "rpm-build", "rpmdevtools",
+		}).
 		WithMountedDirectory("/workspace", source).
 		WithWorkdir("/workspace")
 
