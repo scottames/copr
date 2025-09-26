@@ -110,6 +110,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^hypr/hyprwayland-scanner\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprwayland-scanner',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^zen-browser/.*\\.spec$/',
       ],
       matchStrings: [
