@@ -36,9 +36,9 @@ func (m *Copr) BuildSpecFile(
 		From(
 			fmt.Sprintf("quay.io/fedora/fedora:%s", fedoraVersion),
 		).
-		WithExec(shC("dnf copr enable scottames/hypr")).
-		WithExec(shC("dnf copr enable scottames/ghostty")).
-		WithExec(shC("dnf copr enable scottames/zen-browser")).
+		WithExec(shC("dnf copr enable -y scottames/hypr")).
+		WithExec(shC("dnf copr enable -y scottames/ghostty")).
+		WithExec(shC("dnf copr enable -y scottames/zen-browser")).
 		WithExec([]string{
 			"dnf", "install", "-y",
 			"ca-certificates", "curl", "wget",
