@@ -22,6 +22,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^gtk4-layer-shell/.*\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'wmww/gtk4-layer-shell',
+      datasourceTemplate: 'github-tags',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^hypr/hypridle\\.spec$/',
       ],
       matchStrings: [
