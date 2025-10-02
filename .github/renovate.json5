@@ -11,7 +11,7 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        '/^ghostty/.*\\.spec$/',
+        '/^ghostty/ghostty\\.spec$/',
       ],
       matchStrings: [
         'Version:\\s*(?<currentValue>\\S+)',
@@ -22,7 +22,7 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        '/^gtk4-layer-shell/.*\\.spec$/',
+        '/^ghostty/gtk4-layer-shell\\.spec$/',
       ],
       matchStrings: [
         'Version:\\s*(?<currentValue>\\S+)',
