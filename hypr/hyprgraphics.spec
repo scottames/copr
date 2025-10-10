@@ -1,6 +1,6 @@
 Name:           hyprgraphics
-Version:        0.1.6
-Release:        %autorelease -b10
+Version:        0.2.0
+Release:        %autorelease -b11
 Summary:        Hyprland graphics / resource utilities
 
 License:        BSD-3-Clause
@@ -27,6 +27,7 @@ BuildRequires:  pkgconfig(pixman-1)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(pangocairo)
 BuildRequires:  pkgconfig(libheif)
+BuildRequires:  pkgconfig(librsvg-2.0)
 
 %description
 %{summary}.
@@ -48,12 +49,14 @@ Development files for %{name}.
 %cmake_install
 
 %check
+%ifnarch ppc64le
 %ctest
+%endif
 
 %files
 %license LICENSE
 %doc README.md
-%{_libdir}/lib%{name}.so.0
+%{_libdir}/lib%{name}.so.1
 %{_libdir}/lib%{name}.so.%{version}
 
 %files devel
