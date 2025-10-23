@@ -1,5 +1,5 @@
 Name:           ghostty
-Version:        1.2.2
+Version:        1.2.3
 Release:        1%{?dist}
 Summary:        Fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration
 
