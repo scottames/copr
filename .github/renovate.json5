@@ -132,6 +132,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^swww/swww\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'LGFae/swww',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^zen-browser/.*\\.spec$/',
       ],
       matchStrings: [
