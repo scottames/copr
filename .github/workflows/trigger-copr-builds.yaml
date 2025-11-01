@@ -5,9 +5,6 @@ on:
     branches: [main]
     paths:
       - "*/*.spec"
-  pull_request:
-    paths:
-      - ".github/workflows/trigger-copr-builds.yaml"
   workflow_dispatch:
     inputs:
       # checkov:skip=CKV_GHA_7:arg passed to env
@@ -43,8 +40,7 @@ jobs:
           SEEN_COMBINATIONS=""
 
           # Check if manual spec file was provided via workflow_dispatch
-          # MANUAL_SPEC_FILE="${{ github.event.inputs.spec_file }}"
-          MANUAL_SPEC_FILE="hypr/hyprgraphics.spec"
+          MANUAL_SPEC_FILE="${{ github.event.inputs.spec_file }}"
 
           if [ -n "${MANUAL_SPEC_FILE}" ]; then
             echo "::notice::Using manually specified spec file: ${MANUAL_SPEC_FILE}"
