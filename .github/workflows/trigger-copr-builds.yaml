@@ -128,9 +128,16 @@ jobs:
           echo "::group::Installing COPR CLI dependencies"
           python3 -m pip install copr-cli requests_gssapi
           echo "::endgroup::"
-      - name: Build ${{ matrix.package }}
+      - name: Configure copr-cli authentication
         env:
-          COPR_API_TOKEN: ${{ secrets.COPR_API_TOKEN }}
+          COPR_CONFIG: ${{ secrets.COPR_CONFIG }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.config
+          touch ~/.config/copr
+          chmod 600 ~/.config/copr
+          echo "${COPR_CONFIG}" > ~/.config/copr
+      - name: Build ${{ matrix.package }}
         # yamllint disable rule:line-length
         run: |
           set -euo pipefail
@@ -139,3 +146,6 @@ jobs:
             --name ${{ matrix.package }} \
             "${COPR_OWNER}/${{ matrix.project }}"
         # yamllint enable rule:line-length
+      - name: Cleanup configuration
+        if: always()
+        run: rm -f ~/.config/copr
