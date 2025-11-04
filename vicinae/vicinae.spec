@@ -14,6 +14,7 @@ Source0:        %{forgesource}
 BuildRequires:  cmake
 BuildRequires:  ninja-build
 BuildRequires:  desktop-file-utils
+BuildRequires:  wayland-devel
 
 BuildRequires:  cmake(Qt6)
 BuildRequires:  cmake(Qt6Svg)

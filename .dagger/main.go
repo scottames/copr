@@ -29,7 +29,7 @@ func (m *Copr) BuildSpecFile(
 	// spec file to be built
 	specFile string,
 	// fedora version to build against
-	// +default="42"
+	// +default="43"
 	fedoraVersion string,
 ) (string, error) {
 	container := dag.Container().
