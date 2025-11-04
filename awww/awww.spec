@@ -24,7 +24,7 @@ Summary:        Efficient animated wallpaper daemon for wayland, controlled at r
 License:        GPL-3.0-only AND (0BSD OR MIT OR Apache-2.0) AND Apache-2.0 AND (Apache-2.0 OR MIT) AND (Apache-2.0 WITH LLVM-exception) AND (Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT) AND BSD-2-Clause AND BSD-3-Clause AND MIT AND (MIT OR Apache-2.0) AND (MIT OR Apache-2.0 OR NCSA) AND (CC0-1.0 OR Apache-2.0) AND (MIT OR Apache-2.0 OR Zlib) AND (Unlicense OR MIT) AND Zlib
 
 URL:            https://codeberg.org/LGFae/awww
-Source:         %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source:         %{url}/archive/v%{version}.tar.gz
 
 BuildRequires:  cargo-rpm-macros >= 24
 BuildRequires:  pkgconfig(dav1d)

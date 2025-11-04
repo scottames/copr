@@ -139,7 +139,7 @@
       ],
       depNameTemplate: 'LGFae/awww',
       datasourceTemplate: 'forgejo-releases',
-      registryUrls: ['https://codeberg.org'],
+      registryUrlTemplate: 'https://codeberg.org',
     },
     {
       customType: 'regex',
