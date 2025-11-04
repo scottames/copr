@@ -86,6 +86,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %files
 %{_bindir}/vicinae
+%{_libdir}/libxdgpp.so
 %{_datadir}/applications/*.desktop
 %{_userunitdir}/vicinae.service
 %{_datadir}/icons/hicolor/512x512/apps/vicinae.png
