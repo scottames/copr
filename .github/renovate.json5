@@ -132,13 +132,14 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        '/^swww/swww\\.spec$/',
+        '/^awww/awww\\.spec$/',
       ],
       matchStrings: [
         'Version:\\s*(?<currentValue>\\S+)',
       ],
-      depNameTemplate: 'LGFae/swww',
-      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'LGFae/awww',
+      datasourceTemplate: 'forgejo-releases',
+      registryUrls: ['https://codeberg.org'],
     },
     {
       customType: 'regex',
