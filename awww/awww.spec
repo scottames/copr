@@ -39,7 +39,7 @@ BuildRequires:  scdoc
 %description %{_description}
 
 %prep
-%autosetup -p1
+%autosetup -n awww -p1
 cargo vendor
 %cargo_prep -v vendor
 
@@ -51,11 +51,21 @@ cargo vendor
 %{cargo_vendor_manifest}
 
 %install
-install -Dpm755 target/release/awww %{buildroot}%{_bindir}/awww
-install -Dpm755 target/release/awww-daemon %{buildroot}%{_bindir}/awww-daemon
-install -Dpm644 completions/_awww %{buildroot}%{zsh_completions_dir}/_%{name}
-install -Dpm644 completions/awww.bash %{buildroot}%{bash_completions_dir}/%{name}
-install -Dpm644 completions/awww.fish %{buildroot}%{fish_completions_dir}/%{name}.fish
+# Handle both old (swww) and new (awww) binary names for compatibility
+# Upstream renamed project from swww to awww but hasn't updated Cargo.toml yet
+if [ -f target/rpm/awww ]; then
+    install -Dpm755 target/rpm/awww %{buildroot}%{_bindir}/awww
+    install -Dpm755 target/rpm/awww-daemon %{buildroot}%{_bindir}/awww-daemon
+    install -Dpm644 completions/_awww %{buildroot}%{zsh_completions_dir}/_%{name}
+    install -Dpm644 completions/awww.bash %{buildroot}%{bash_completions_dir}/%{name}
+    install -Dpm644 completions/awww.fish %{buildroot}%{fish_completions_dir}/%{name}.fish
+else
+    install -Dpm755 target/rpm/swww %{buildroot}%{_bindir}/awww
+    install -Dpm755 target/rpm/swww-daemon %{buildroot}%{_bindir}/awww-daemon
+    install -Dpm644 completions/_swww %{buildroot}%{zsh_completions_dir}/_%{name}
+    install -Dpm644 completions/swww.bash %{buildroot}%{bash_completions_dir}/%{name}
+    install -Dpm644 completions/swww.fish %{buildroot}%{fish_completions_dir}/%{name}.fish
+fi
 install -Dpm644 ./doc/generated/*.1 -t %{buildroot}%{_mandir}/man1
 
 %if %{with check}
@@ -71,7 +81,7 @@ install -Dpm644 ./doc/generated/*.1 -t %{buildroot}%{_mandir}/man1
 %doc README.md
 %{_bindir}/awww
 %{_bindir}/awww-daemon
-%{_mandir}/man1/awww*.1.*
+%{_mandir}/man1/*www*.1.*
 %{bash_completions_dir}/%{name}
 %{fish_completions_dir}/%{name}.fish
 %{zsh_completions_dir}/_%{name}
