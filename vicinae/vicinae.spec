@@ -60,8 +60,13 @@ Vicinae icon theme
 
 
 %build
+COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")"
+
 %cmake -G Ninja \
+    -DVICINAE_GIT_TAG="v%{version}" \
+    -DVICINAE_GIT_COMMIT_HASH="${COMMIT_HASH}" \
     -DCMAKE_BUILD_TYPE=Release \
+    -DVICINAE_PROVENANCE=copr \
 %cmake_build
 
 
@@ -80,31 +85,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %files
 %{_bindir}/vicinae
-%{_bindir}/vicinae-wlr-clip
 %{_datadir}/applications/*.desktop
 %{_userunitdir}/vicinae.service
+%{_datadir}/icons/hicolor/512x512/apps/vicinae.png
 %{_datadir}/icons/hicolor/scalable/apps/vicinae.svg
 %{_datadir}/vicinae/themes/*
 
 
-%files icon-theme
-%{_datadir}/icons/vicinae/index.theme
-%{_datadir}/icons/vicinae/8x8/
-%{_datadir}/icons/vicinae/16x16/
-%{_datadir}/icons/vicinae/16x16@2x
-%{_datadir}/icons/vicinae/18x18/
-%{_datadir}/icons/vicinae/18x18@2x
-%{_datadir}/icons/vicinae/22x22/
-%{_datadir}/icons/vicinae/22x22@2x
-%{_datadir}/icons/vicinae/24x24/
-%{_datadir}/icons/vicinae/24x24@2x
-%{_datadir}/icons/vicinae/32x32/
-%{_datadir}/icons/vicinae/32x32@2x
-%{_datadir}/icons/vicinae/42x42/
-%{_datadir}/icons/vicinae/48x48/
-%{_datadir}/icons/vicinae/48x48@2x
-%{_datadir}/icons/vicinae/64x64/
-%{_datadir}/icons/vicinae/64x64@2x
-%{_datadir}/icons/vicinae/84x84/
-%{_datadir}/icons/vicinae/96x96/
-%{_datadir}/icons/vicinae/128x128/
+%changelog
+%autochangelog
