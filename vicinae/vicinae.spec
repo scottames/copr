@@ -78,6 +78,9 @@ sed -i 's/^Categories=.*/Categories=Utility;/' extra/vicinae.desktop
 %cmake_install
 install -Dm644 extra/vicinae.service %{buildroot}%{_userunitdir}/vicinae.service
 install -Dm644 vicinae/icons/vicinae.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/vicinae.svg
+# manually install libxdgpp since XDGPP_INSTALL is OFF in CMakeLists, but needed
+# at runtime
+install -Dm755 %{_vpath_builddir}/lib/xdgpp/libxdgpp.so %{buildroot}%{_libdir}/libxdgpp.so
 
 
 %check
