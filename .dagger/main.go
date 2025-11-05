@@ -29,15 +29,17 @@ func (m *Copr) BuildSpecFile(
 	// spec file to be built
 	specFile string,
 	// fedora version to build against
-	// +default="42"
+	// +default="43"
 	fedoraVersion string,
 ) (string, error) {
 	container := dag.Container().
 		From(
 			fmt.Sprintf("quay.io/fedora/fedora:%s", fedoraVersion),
 		).
+		WithExec(shC("dnf copr enable -y scottames/awww")).
 		WithExec(shC("dnf copr enable -y scottames/hypr")).
 		WithExec(shC("dnf copr enable -y scottames/ghostty")).
+		WithExec(shC("dnf copr enable -y scottames/vicinae")).
 		WithExec(shC("dnf copr enable -y scottames/zen-browser")).
 		WithExec([]string{
 			"dnf", "install", "-y",

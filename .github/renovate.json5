@@ -144,6 +144,28 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^vicinae/cmark-gfm\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'github/cmark-gfm',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^vicinae/vicinae\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'vicinaehq/vicinae',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^zen-browser/.*\\.spec$/',
       ],
       matchStrings: [
