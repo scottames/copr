@@ -19,6 +19,8 @@ URL:            https://mise.jdx.dev
 Source0:        https://github.com/jdx/mise/archive/v%{version}/mise-%{version}.tar.gz
 # Prebuilt binary tarball - architecture specific
 Source1:        https://github.com/jdx/mise/releases/download/v%{version}/mise-v%{version}-linux-%{mise_arch}.tar.xz
+# Checksum file for verification
+Source2:        https://github.com/jdx/mise/releases/download/v%{version}/SHASUMS256.txt
 
 # No build requirements needed since we're using prebuilt binaries
 
@@ -28,6 +30,17 @@ environment variables, and tasks. It's a replacement for tools like nvm, rbenv,
 pyenv, etc. and works with any language.
 
 %prep
+# Verify checksum of binary tarball before extraction
+EXPECTED_SUM=$(grep "mise-v%{version}-linux-%{mise_arch}.tar.xz" %{SOURCE2} | cut -d' ' -f1)
+ACTUAL_SUM=$(sha256sum %{SOURCE1} | cut -d' ' -f1)
+if [ "$EXPECTED_SUM" != "$ACTUAL_SUM" ]; then
+    echo "ERROR: Checksum verification failed for mise-v%{version}-linux-%{mise_arch}.tar.xz"
+    echo "Expected: $EXPECTED_SUM"
+    echo "Actual:   $ACTUAL_SUM"
+    exit 1
+fi
+echo "Checksum verified successfully: $ACTUAL_SUM"
+
 # Extract source tarball for docs/license
 %autosetup -n %{name}-%{version}
 
