@@ -144,6 +144,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^mise/mise\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'jdx/mise',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^vicinae/cmark-gfm\\.spec$/',
       ],
       matchStrings: [
