@@ -1,5 +1,12 @@
 %global debug_package %{nil}
-%global _missing_build_ids_terminate_build 0
+
+# Map RPM architecture to mise's naming convention
+%ifarch x86_64
+%global mise_arch x64
+%endif
+%ifarch aarch64
+%global mise_arch arm64
+%endif
 
 Name:           mise
 Version:        2025.11.2
@@ -8,14 +15,12 @@ Summary:        The front-end to your dev env
 
 License:        MIT
 URL:            https://mise.jdx.dev
+# Source tarball for documentation and LICENSE files
 Source0:        https://github.com/jdx/mise/archive/v%{version}/mise-%{version}.tar.gz
-Source1:        mise-vendor-%{version}.tar.gz
+# Prebuilt binary tarball - architecture specific
+Source1:        https://github.com/jdx/mise/releases/download/v%{version}/mise-v%{version}-linux-%{mise_arch}.tar.xz
 
-BuildRequires:  rust >= 1.85
-BuildRequires:  cargo
-BuildRequires:  gcc
-BuildRequires:  git
-BuildRequires:  openssl-devel
+# No build requirements needed since we're using prebuilt binaries
 
 %description
 mise is a development environment setup tool that manages runtime versions,
@@ -23,41 +28,33 @@ environment variables, and tasks. It's a replacement for tools like nvm, rbenv,
 pyenv, etc. and works with any language.
 
 %prep
+# Extract source tarball for docs/license
 %autosetup -n %{name}-%{version}
-%setup -q -T -D -a 1
+
+# Extract prebuilt binary tarball
+tar -xf %{SOURCE1} --strip-components=1 -C .
 
 %build
-# Set up vendored dependencies
-mkdir -p .cargo
-cp .cargo/config.toml .cargo/config.toml.bak 2>/dev/null || true
-cat > .cargo/config.toml << 'CARGO_EOF'
-[source.crates-io]
-replace-with = "vendored-sources"
-
-[source.vendored-sources]
-directory = "vendor"
-CARGO_EOF
-
-# Build with specified profile
-cargo build --profile release --frozen --bin mise
+# No build needed - using prebuilt binaries
 
 %install
+# Install binary
 mkdir -p %{buildroot}%{_bindir}
-cp target/release/mise %{buildroot}%{_bindir}/
+install -m 0755 bin/mise %{buildroot}%{_bindir}/mise
 
-# Install man page if available
+# Install man page
 mkdir -p %{buildroot}%{_mandir}/man1
-cp man/man1/mise.1 %{buildroot}%{_mandir}/man1/
+install -m 0644 man/man1/mise.1 %{buildroot}%{_mandir}/man1/
 
-# Install shell completions
+# Generate and install shell completions using the mise binary itself
 mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
-cp completions/mise.bash %{buildroot}%{_datadir}/bash-completion/completions/mise
+%{buildroot}%{_bindir}/mise completion bash > %{buildroot}%{_datadir}/bash-completion/completions/mise
 
 mkdir -p %{buildroot}%{_datadir}/zsh/site-functions
-cp completions/_mise %{buildroot}%{_datadir}/zsh/site-functions/
+%{buildroot}%{_bindir}/mise completion zsh > %{buildroot}%{_datadir}/zsh/site-functions/_mise
 
 mkdir -p %{buildroot}%{_datadir}/fish/vendor_completions.d
-cp completions/mise.fish %{buildroot}%{_datadir}/fish/vendor_completions.d/
+%{buildroot}%{_bindir}/mise completion fish > %{buildroot}%{_datadir}/fish/vendor_completions.d/mise.fish
 
 # Disable self-update for package manager installations
 mkdir -p %{buildroot}%{_libdir}/mise
