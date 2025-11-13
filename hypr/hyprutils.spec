@@ -1,5 +1,5 @@
 Name:           hyprutils
-Version:        0.10.1
+Version:        0.10.2
 Release:        %autorelease
 Summary:        Hyprland utilities library used across the ecosystem
 
@@ -12,6 +12,7 @@ ExcludeArch:    %{ix86}
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
+BuildRequires:  gtest-devel
 BuildRequires:  pkgconfig(pixman-1)
 
 %description
