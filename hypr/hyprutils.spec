@@ -12,6 +12,7 @@ ExcludeArch:    %{ix86}
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
+BuildRequires:  gtest-devel
 BuildRequires:  pkgconfig(pixman-1)
 
 %description
