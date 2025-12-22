@@ -3,7 +3,7 @@
 %global             debug_package %{nil}
 
 Name:               zen-browser-arm
-Version:            1.17.14b
+Version:            1.17.15b
 Release:            1%{?dist}
 Summary:            Zen Browser
 
