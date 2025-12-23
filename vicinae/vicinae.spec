@@ -3,7 +3,7 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.16.14
+Version:        0.17.2
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
@@ -12,6 +12,7 @@ License:        GPL-3.0
 URL:            %{forgeurl}
 Source0:        %{forgesource}
 BuildRequires:  cmake
+BuildRequires:  git
 BuildRequires:  ninja-build
 BuildRequires:  desktop-file-utils
 BuildRequires:  wayland-devel
