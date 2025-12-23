@@ -12,6 +12,7 @@ License:        GPL-3.0
 URL:            %{forgeurl}
 Source0:        %{forgesource}
 BuildRequires:  cmake
+BuildRequires:  git
 BuildRequires:  ninja-build
 BuildRequires:  desktop-file-utils
 BuildRequires:  wayland-devel
