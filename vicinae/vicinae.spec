@@ -26,6 +26,7 @@ BuildRequires:  cmake(LayerShellQt)
 BuildRequires:  cmake(rapidfuzz)
 BuildRequires:  cmake(absl)
 
+BuildRequires:  pkgconfig(icu-uc)
 BuildRequires:  pkgconfig(libcmark-gfm)
 BuildRequires:  pkgconfig(libqalculate)
 BuildRequires:  pkgconfig(openssl)
