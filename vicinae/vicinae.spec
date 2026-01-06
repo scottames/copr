@@ -3,7 +3,7 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.18.0
+Version:        0.18.1
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
@@ -26,6 +26,7 @@ BuildRequires:  cmake(LayerShellQt)
 BuildRequires:  cmake(rapidfuzz)
 BuildRequires:  cmake(absl)
 
+BuildRequires:  pkgconfig(icu-uc)
 BuildRequires:  pkgconfig(libcmark-gfm)
 BuildRequires:  pkgconfig(libqalculate)
 BuildRequires:  pkgconfig(openssl)
