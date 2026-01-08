@@ -25,6 +25,7 @@ BuildRequires:  cmake(Qt6Keychain)
 BuildRequires:  cmake(LayerShellQt)
 BuildRequires:  cmake(rapidfuzz)
 BuildRequires:  cmake(absl)
+BuildRequires:  glaze-devel
 
 BuildRequires:  pkgconfig(icu-uc)
 BuildRequires:  pkgconfig(libcmark-gfm)
@@ -70,6 +71,7 @@ COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev
     -DVICINAE_GIT_COMMIT_HASH="${COMMIT_HASH}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DVICINAE_PROVENANCE=copr \
+    -DUSE_SYSTEM_GLAZE=ON \
 %cmake_build
 
 
