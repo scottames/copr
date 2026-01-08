@@ -70,6 +70,7 @@ COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev
     -DVICINAE_GIT_COMMIT_HASH="${COMMIT_HASH}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DVICINAE_PROVENANCE=copr \
+    -DUSE_SYSTEM_GLAZE=OFF \
 %cmake_build
 
 
