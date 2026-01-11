@@ -22,15 +22,6 @@ serialization and deserialization for C++ structures. It's a header-only
 library supporting JSON, BEVE, CBOR, CSV, MessagePack, TOML, and EETF formats.
 
 
-%package devel
-Summary:        Development files for %{name}
-Provides:       %{name}-static = %{version}-%{release}
-
-%description devel
-Glaze is a header-only library providing extremely fast JSON and interface
-serialization for modern C++. This package contains the development headers.
-
-
 %prep
 %forgeautosetup
 
@@ -47,7 +38,7 @@ serialization for modern C++. This package contains the development headers.
 %cmake_install
 
 
-%files devel
+%files
 %license LICENSE
 %doc README.md
 %{_includedir}/glaze/
