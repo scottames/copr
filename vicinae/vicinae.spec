@@ -25,7 +25,7 @@ BuildRequires:  cmake(Qt6Keychain)
 BuildRequires:  cmake(LayerShellQt)
 BuildRequires:  cmake(rapidfuzz)
 BuildRequires:  cmake(absl)
-BuildRequires:  glaze-devel
+BuildRequires:  glaze
 
 BuildRequires:  pkgconfig(icu-uc)
 BuildRequires:  pkgconfig(libcmark-gfm)
