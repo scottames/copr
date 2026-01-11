@@ -3,7 +3,7 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.18.1
+Version:        0.18.3
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
@@ -25,6 +25,7 @@ BuildRequires:  cmake(Qt6Keychain)
 BuildRequires:  cmake(LayerShellQt)
 BuildRequires:  cmake(rapidfuzz)
 BuildRequires:  cmake(absl)
+BuildRequires:  glaze
 
 BuildRequires:  pkgconfig(icu-uc)
 BuildRequires:  pkgconfig(libcmark-gfm)
@@ -65,11 +66,15 @@ Vicinae icon theme
 %build
 COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")"
 
+# Add missing #include <ranges> to ext-clip/app.cpp (upstream bug)
+sed -i '1i #include <ranges>' vicinae/src/ext-clip/app.cpp
+
 %cmake -G Ninja \
     -DVICINAE_GIT_TAG="v%{version}" \
     -DVICINAE_GIT_COMMIT_HASH="${COMMIT_HASH}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DVICINAE_PROVENANCE=copr \
+    -DUSE_SYSTEM_GLAZE=ON \
 %cmake_build
 
 
