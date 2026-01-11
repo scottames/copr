@@ -166,6 +166,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^vicinae/glaze\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'stephenberry/glaze',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^vicinae/vicinae\\.spec$/',
       ],
       matchStrings: [
