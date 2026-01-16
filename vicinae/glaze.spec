@@ -1,7 +1,7 @@
 %global forgeurl https://github.com/stephenberry/glaze
 
 Name:           glaze
-Version:        7.0.0
+Version:        7.0.1
 Release:        1%{?dist}
 Summary:        Extremely fast, in memory, JSON and interface library for modern C++
 License:        MIT
