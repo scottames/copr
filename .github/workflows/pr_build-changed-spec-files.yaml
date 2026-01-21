@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
   pull-requests: read
+concurrency:
+  # yamllint disable-line rule:line-length
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
@@ -45,18 +49,22 @@ jobs:
           echo "matrix={\"include\":$json_include}" >> "$GITHUB_OUTPUT"
         # yamllint enable rule:line-length
   build-spec:
+    name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      matrix:
+        fedora-version: ["42", "43"]
+        include: ${{ fromJson(needs.detect-changes.outputs.matrix).include }}
       fail-fast: false
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - name: dagger build ${{ matrix.spec-file }}
+      - name: dagger build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
         # yamllint disable-line rule:line-length
         uses: dagger/dagger-for-github@b81317a976cb7f7125469707321849737cd1b3bc # v7
         with:
           version: "latest"
           verb: call
-          args: build-spec-file --spec-file "${{ matrix.spec-file }}"
+          # yamllint disable-line rule:line-length
+          args: build-spec-file --spec-file "${{ matrix.spec-file }}" --fedora-version "${{ matrix.fedora-version }}"
