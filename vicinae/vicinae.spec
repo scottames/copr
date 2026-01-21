@@ -70,6 +70,7 @@ COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev
 sed -i '1i #include <ranges>' vicinae/src/ext-clip/app.cpp
 sed -i '1i #include <ranges>' vicinae/src/script/script-command-file.cpp
 sed -i '1i #include <ranges>' vicinae/src/services/script-command/script-command-service.cpp
+sed -i '1i #include <ranges>' vicinae/src/extension/requests/app-request-router.cpp
 
 %cmake -G Ninja \
     -DVICINAE_GIT_TAG="v%{version}" \
