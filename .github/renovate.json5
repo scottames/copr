@@ -33,6 +33,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^hypr/aquamarine\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/aquamarine',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^hypr/hypridle\\.spec$/',
       ],
       matchStrings: [
