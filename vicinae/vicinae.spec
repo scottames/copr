@@ -66,8 +66,9 @@ Vicinae icon theme
 %build
 COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")"
 
-# Add missing #include <ranges> to ext-clip/app.cpp (upstream bug)
+# Add missing #include <ranges> (upstream bug - relies on transitive includes)
 sed -i '1i #include <ranges>' vicinae/src/ext-clip/app.cpp
+sed -i '1i #include <ranges>' vicinae/src/script/script-command-file.cpp
 
 %cmake -G Ninja \
     -DVICINAE_GIT_TAG="v%{version}" \
