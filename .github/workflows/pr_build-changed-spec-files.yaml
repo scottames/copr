@@ -45,6 +45,7 @@ jobs:
           echo "matrix={\"include\":$json_include}" >> "$GITHUB_OUTPUT"
         # yamllint enable rule:line-length
   build-spec:
+    name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true'
     runs-on: ${{ matrix.os }}
