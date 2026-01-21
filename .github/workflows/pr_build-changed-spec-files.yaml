@@ -11,6 +11,8 @@ concurrency:
   # yamllint disable-line rule:line-length
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+env:
+  FEDORA_VERSIONS: "42 43"
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
@@ -31,32 +33,36 @@ jobs:
             **/*.spec
       - name: Set matrix output
         id: set-matrix
-        # yamllint disable rule:line-length
         run: |
-          files="${{ steps.changed-files.outputs.all_changed_files }}"
-          json_include="[]"
+          files='${{ steps.changed-files.outputs.all_changed_files }}'
+          include_array='[]'
+
           if [ -n "$files" ]; then
-            json_include="["
             for file in $files; do
               os="ubuntu-24.04"
               if [[ "$file" == *aarch64.spec ]] || [[ "$file" == *arm.spec ]]; then
                 os="ubuntu-24.04-arm"
               fi
-              json_include+=$(printf '{"spec-file":"%s","os":"%s"},' "$file" "$os")
+
+              for fv in $FEDORA_VERSIONS; do
+                include_array=$(echo "$include_array" | jq -c \
+                  --arg spec "$file" \
+                  --arg os "$os" \
+                  --arg fv "$fv" \
+                  '. += [{"spec-file": $spec, "os": $os, "fedora-version": $fv}]')
+              done
             done
-            json_include="${json_include%,}]"
           fi
-          echo "matrix={\"include\":$json_include}" >> "$GITHUB_OUTPUT"
-        # yamllint enable rule:line-length
+
+          matrix_json=$(jq -cn --argjson inc "$include_array" '{"include": $inc}')
+          echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
   build-spec:
     name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix:
-        fedora-version: ["42", "43"]
-        include: ${{ fromJson(needs.detect-changes.outputs.matrix).include }}
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
