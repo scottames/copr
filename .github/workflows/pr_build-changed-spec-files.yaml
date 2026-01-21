@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
   pull-requests: read
+concurrency:
+  # yamllint disable-line rule:line-length
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
