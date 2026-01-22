@@ -33,6 +33,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^hypr/aquamarine\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/aquamarine',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^hypr/hypridle\\.spec$/',
       ],
       matchStrings: [
@@ -110,6 +121,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^hypr/hyprtoolkit\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprtoolkit',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^hypr/hyprutils\\.spec$/',
       ],
       matchStrings: [
@@ -127,6 +149,17 @@
         'Version:\\s*(?<currentValue>\\S+)',
       ],
       depNameTemplate: 'hyprwm/hyprwayland-scanner',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^hypr/hyprwire\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'hyprwm/hyprwire',
       datasourceTemplate: 'github-releases',
     },
     {
