@@ -44,6 +44,13 @@ Development files for %{name}.
 %prep
 %autosetup -p1
 
+# Fix missing includes for NAME_MAX and read() on Rawhide
+# https://github.com/hyprwm/hyprtoolkit/issues/XXX
+%if 0%{?fedora} >= 44
+sed -i '/#include "ConfigManager.hpp"/a #include <climits>\n#include <unistd.h>' \
+    src/palette/ConfigManager.cpp
+%endif
+
 %build
 %cmake -GNinja \
     -DCMAKE_BUILD_TYPE=Release \
