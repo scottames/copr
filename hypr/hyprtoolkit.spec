@@ -15,7 +15,7 @@ BuildRequires:  cmake(hyprwayland-scanner)
 BuildRequires:  gcc-c++
 BuildRequires:  mesa-libEGL-devel
 BuildRequires:  ninja-build
-BuildRequires:  pkgconfig(aquamarine)
+BuildRequires:  pkgconfig(aquamarine) >= 0.10.0
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(hyprgraphics)
@@ -64,7 +64,7 @@ sed -i '/#include "ConfigManager.hpp"/a #include <climits>\n#include <unistd.h>'
 %license LICENSE
 %doc README.md
 %{_libdir}/lib%{name}.so.%{version}
-%{_libdir}/lib%{name}.so.2
+%{_libdir}/lib%{name}.so.5
 
 %files devel
 %{_includedir}/%{name}/
