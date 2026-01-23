@@ -15,14 +15,21 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  systemd-rpm-macros
 
+BuildRequires:  pkgconfig(cairo)
+BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(hyprlang)
 BuildRequires:  pkgconfig(hyprutils)
 BuildRequires:  pkgconfig(hyprtoolkit)
 BuildRequires:  pkgconfig(hyprwayland-scanner)
 BuildRequires:  pkgconfig(hyprwire)
 BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(libmagic)
+BuildRequires:  pkgconfig(opengl)
+BuildRequires:  pkgconfig(pango)
+BuildRequires:  pkgconfig(pangocairo)
 BuildRequires:  pkgconfig(pixman-1)
 BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(wayland-protocols)
 
 %description
 Hyprpaper is a blazing fast wallpaper utility for Hyprland with the ability
