@@ -1,6 +1,6 @@
 Name:           hyprpaper
-Version:        0.7.6
-Release:        %autorelease -b2
+Version:        0.8.1
+Release:        %autorelease
 Summary:        Blazing fast wayland wallpaper utility with IPC controls
 # LICENSE: BSD-3-Clause
 # protocols/wlr-layer-shell-unstable-v1.xml: HPND-sell-variant
@@ -15,17 +15,14 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  systemd-rpm-macros
 
-BuildRequires:  pkgconfig(cairo)
-BuildRequires:  pkgconfig(glesv2)
-BuildRequires:  pkgconfig(hyprgraphics)
 BuildRequires:  pkgconfig(hyprlang)
 BuildRequires:  pkgconfig(hyprutils)
+BuildRequires:  pkgconfig(hyprtoolkit)
 BuildRequires:  pkgconfig(hyprwayland-scanner)
-BuildRequires:  pkgconfig(libmagic)
-BuildRequires:  pkgconfig(pango)
-BuildRequires:  pkgconfig(pangocairo)
+BuildRequires:  pkgconfig(hyprwire)
+BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(pixman-1)
 BuildRequires:  pkgconfig(wayland-client)
-BuildRequires:  pkgconfig(wayland-protocols)
 
 %description
 Hyprpaper is a blazing fast wallpaper utility for Hyprland with the ability
