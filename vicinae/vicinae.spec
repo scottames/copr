@@ -89,7 +89,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %files
 %{_bindir}/vicinae
-/usr/lib/libbrowser.a
+%{_libexecdir}/vicinae/*
 %{_sysconfdir}/chromium/native-messaging-hosts/com.vicinae.vicinae.json
 /usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json
 %{_datadir}/applications/*.desktop
