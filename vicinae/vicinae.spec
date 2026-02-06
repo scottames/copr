@@ -81,9 +81,6 @@ sed -i 's/Terminal=False/Terminal=false/' extra/vicinae.desktop
 sed -i 's/^Categories=.*/Categories=Utility;/' extra/vicinae.desktop
 %cmake_install
 install -Dm644 extra/vicinae.service %{buildroot}%{_userunitdir}/vicinae.service
-# manually install libxdgpp since XDGPP_INSTALL is OFF in CMakeLists, but needed
-# at runtime
-install -Dm755 %{_vpath_builddir}/lib/xdgpp/libxdgpp.so %{buildroot}%{_libdir}/libxdgpp.so
 
 
 %check
@@ -93,7 +90,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %files
 %{_bindir}/vicinae
 /usr/lib/libbrowser.a
-%{_libdir}/libxdgpp.so
 %{_sysconfdir}/chromium/native-messaging-hosts/com.vicinae.vicinae.json
 /usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json
 %{_datadir}/applications/*.desktop
