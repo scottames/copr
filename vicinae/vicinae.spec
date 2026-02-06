@@ -3,7 +3,7 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.19.3
+Version:        0.19.6
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
@@ -66,12 +66,6 @@ Vicinae icon theme
 %build
 COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")"
 
-# Add missing #include <ranges> (upstream bug - relies on transitive includes)
-sed -i '1i #include <ranges>' vicinae/src/ext-clip/app.cpp
-sed -i '1i #include <ranges>' vicinae/src/script/script-command-file.cpp
-sed -i '1i #include <ranges>' vicinae/src/services/script-command/script-command-service.cpp
-sed -i '1i #include <ranges>' vicinae/src/extension/requests/app-request-router.cpp
-
 %cmake -G Ninja \
     -DVICINAE_GIT_TAG="v%{version}" \
     -DVICINAE_GIT_COMMIT_HASH="${COMMIT_HASH}" \
@@ -87,10 +81,6 @@ sed -i 's/Terminal=False/Terminal=false/' extra/vicinae.desktop
 sed -i 's/^Categories=.*/Categories=Utility;/' extra/vicinae.desktop
 %cmake_install
 install -Dm644 extra/vicinae.service %{buildroot}%{_userunitdir}/vicinae.service
-install -Dm644 vicinae/icons/vicinae.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/vicinae.svg
-# manually install libxdgpp since XDGPP_INSTALL is OFF in CMakeLists, but needed
-# at runtime
-install -Dm755 %{_vpath_builddir}/lib/xdgpp/libxdgpp.so %{buildroot}%{_libdir}/libxdgpp.so
 
 
 %check
@@ -99,14 +89,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %files
 %{_bindir}/vicinae
-/usr/lib/libbrowser.a
-%{_libdir}/libxdgpp.so
+%{_libexecdir}/vicinae/*
 %{_sysconfdir}/chromium/native-messaging-hosts/com.vicinae.vicinae.json
 /usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json
 %{_datadir}/applications/*.desktop
 %{_userunitdir}/vicinae.service
 %{_datadir}/icons/hicolor/512x512/apps/vicinae.png
-%{_datadir}/icons/hicolor/scalable/apps/vicinae.svg
 %{_datadir}/vicinae/themes/*
 
 

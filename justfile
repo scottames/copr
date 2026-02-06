@@ -1,7 +1,9 @@
 # Build a single spec file
-build spec_file:
+build spec_file fedora_version="43":
     dagger call build-spec-file \
-      --spec-file "{{spec_file}}"
+      --source . \
+      --spec-file "$file" \
+      --fedora-version "{{ fedora_version }}"
 
 # Build all changed (git) spec files
 build-changed:
