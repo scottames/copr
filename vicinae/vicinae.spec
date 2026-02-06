@@ -73,6 +73,7 @@ COMMIT_HASH="$(git -C %{_builddir}/%{extractdir} rev-parse --short=7 HEAD 2>/dev
     -DCMAKE_BUILD_TYPE=Release \
     -DVICINAE_PROVENANCE=copr \
     -DUSE_SYSTEM_GLAZE=ON \
+    -DBUILD_SHARED_LIBS=OFF \
 %cmake_build
 
 
