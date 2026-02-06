@@ -4,7 +4,7 @@
 Name:           vicinae
 Epoch:          1
 Version:        0.19.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
 
@@ -37,6 +37,7 @@ BuildRequires:  nodejs-npm
 BuildRequires:  minizip-compat-devel
 BuildRequires:  qt6-qtbase-private-devel
 
+Recommends:     nodejs
 Recommends:     vicinae-icon-theme
 
 
