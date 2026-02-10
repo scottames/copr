@@ -1,5 +1,5 @@
 Name:           hyprpicker
-Version:        0.4.5
+Version:        0.4.6
 Release:        %autorelease -b2
 Summary:        A wlroots-compatible Wayland color picker
 # LICENSE: BSD-3-Clause
