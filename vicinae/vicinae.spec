@@ -4,7 +4,7 @@
 Name:           vicinae
 Epoch:          1
 Version:        0.19.9
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
 
@@ -98,6 +98,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_userunitdir}/vicinae.service
 %{_datadir}/icons/hicolor/512x512/apps/vicinae.png
 %{_datadir}/vicinae/themes/*
+%{_datadir}/vicinae/native-messaging-hosts/*.json.in
 
 
 %changelog
