@@ -3,7 +3,7 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.19.9
+Version:        0.20.0
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
@@ -18,10 +18,12 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  wayland-devel
 
 BuildRequires:  cmake(Qt6)
+BuildRequires:  cmake(Qt6Quick)
 BuildRequires:  cmake(Qt6Svg)
 BuildRequires:  cmake(Qt6WaylandClient)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6Keychain)
+BuildRequires:  cmake(KF6SyntaxHighlighting)
 BuildRequires:  cmake(LayerShellQt)
 BuildRequires:  cmake(rapidfuzz)
 BuildRequires:  cmake(absl)
