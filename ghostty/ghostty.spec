@@ -45,6 +45,13 @@ Requires: zlib-ng
 %description
 %{summary}.
 
+%package        devel
+Summary:        Development files for libghostty-vt
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+
+%description    devel
+This package provides the development files for libghostty-vt.
+
 
 %prep
 %setup -q -n ghostty-%{version}
@@ -58,7 +65,8 @@ DESTDIR=%{buildroot} zig build \
     -Doptimize=ReleaseFast \
     -Dcpu=baseline \
     -Dpie=true \
-    -Demit-docs
+    -Demit-docs \
+    -Demit-themes=true
 
 %if 0%{?fedora} >= 42
     rm -f "%{buildroot}%{_prefix}/share/terminfo/g/ghostty"
@@ -99,11 +107,19 @@ DESTDIR=%{buildroot} zig build \
 %{_prefix}/share/locale/*/LC_MESSAGES/com.mitchellh.ghostty.mo
 %{_prefix}/share/metainfo/com.mitchellh.ghostty.metainfo.xml
 %{_prefix}/share/systemd/user/app-com.mitchellh.ghostty.service
+%{_prefix}/lib/libghostty-vt.so.0
+%{_prefix}/lib/libghostty-vt.so.0.1.0
 
 %{_prefix}/share/terminfo/x/xterm-ghostty
 %if 0%{?fedora} < 42
     %{_prefix}/share/terminfo/g/ghostty
 %endif
+
+%files devel
+%{_prefix}/include/ghostty/vt.h
+%{_prefix}/include/ghostty/vt/
+%{_prefix}/lib/libghostty-vt.so
+%{_prefix}/share/pkgconfig/libghostty-vt.pc
 
 %changelog
 %autochangelog
