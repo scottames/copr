@@ -53,6 +53,7 @@ cargo vendor
 %install
 # Handle both old (swww) and new (awww) binary names for compatibility
 # Upstream renamed project from swww to awww but hasn't updated Cargo.toml yet
+# TODO: remove `swww`
 if [ -f target/rpm/awww ]; then
     install -Dpm755 target/rpm/awww %{buildroot}%{_bindir}/awww
     install -Dpm755 target/rpm/awww-daemon %{buildroot}%{_bindir}/awww-daemon
