@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 env:
   FEDORA_VERSIONS: "42 43"
+  SPEC_FEDORA_VERSIONS_JSON: '{"ghostty/ghostty.spec":["43"]}'
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
@@ -40,11 +41,18 @@ jobs:
           if [ -n "$files" ]; then
             for file in $files; do
               os="ubuntu-24.04"
+              fedora_versions="$FEDORA_VERSIONS"
+
               if [[ "$file" == *aarch64.spec ]] || [[ "$file" == *arm.spec ]]; then
                 os="ubuntu-24.04-arm"
               fi
 
-              for fv in $FEDORA_VERSIONS; do
+              override_versions=$(jq -r --arg spec "$file" '.[$spec] // empty | join(" ")' <<< "$SPEC_FEDORA_VERSIONS_JSON")
+              if [ -n "$override_versions" ]; then
+                fedora_versions="$override_versions"
+              fi
+
+              for fv in $fedora_versions; do
                 include_array=$(echo "$include_array" | jq -c \
                   --arg spec "$file" \
                   --arg os "$os" \
