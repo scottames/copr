@@ -58,7 +58,8 @@ DESTDIR=%{buildroot} zig build \
     -Doptimize=ReleaseFast \
     -Dcpu=baseline \
     -Dpie=true \
-    -Demit-docs
+    -Demit-docs \
+    -Demit-themes=false
 
 %if 0%{?fedora} >= 42
     rm -f "%{buildroot}%{_prefix}/share/terminfo/g/ghostty"
