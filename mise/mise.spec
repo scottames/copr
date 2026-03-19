@@ -16,6 +16,8 @@ Source2:        https://github.com/jdx/mise/releases/download/v%{version}/mise-v
 Source3:        https://github.com/jdx/mise/releases/download/v%{version}/SHASUMS256.txt
 
 # No build requirements needed since we're using prebuilt binaries
+#
+# TEST - DO NOT MERGE
 
 %description
 mise is a development environment setup tool that manages runtime versions,

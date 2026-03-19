@@ -1,6 +1,7 @@
 {
   "default_fedora_versions": ["42", "43"],
   "spec_overrides": {
-    "ghostty/ghostty.spec": ["43"]
+    "ghostty/ghostty.spec": ["43"],
+    "mise/mise.spec": ["43"]
   }
 }
