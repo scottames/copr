@@ -11,9 +11,6 @@ concurrency:
   # yamllint disable-line rule:line-length
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-env:
-  FEDORA_VERSIONS: "42 43"
-  SPEC_FEDORA_VERSIONS_JSON: '{"ghostty/ghostty.spec":["43"]}'
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
@@ -34,25 +31,29 @@ jobs:
             **/*.spec
       - name: Set matrix output
         id: set-matrix
+        # yamllint disable rule:line-length
         run: |
+          build_targets_json=$(jq -c . .github/spec-build-targets.json)
+          fedora_versions=$(jq -r '.default_fedora_versions | join(" ")' <<< "$build_targets_json")
+          spec_fedora_versions_json=$(jq -c '.spec_overrides' <<< "$build_targets_json")
           files='${{ steps.changed-files.outputs.all_changed_files }}'
           include_array='[]'
 
           if [ -n "$files" ]; then
             for file in $files; do
               os="ubuntu-24.04"
-              fedora_versions="$FEDORA_VERSIONS"
+              file_fedora_versions="$fedora_versions"
 
               if [[ "$file" == *aarch64.spec ]] || [[ "$file" == *arm.spec ]]; then
                 os="ubuntu-24.04-arm"
               fi
 
-              override_versions=$(jq -r --arg spec "$file" '.[$spec] // empty | join(" ")' <<< "$SPEC_FEDORA_VERSIONS_JSON")
+              override_versions=$(jq -r --arg spec "$file" '.[$spec] // empty | join(" ")' <<< "$spec_fedora_versions_json")
               if [ -n "$override_versions" ]; then
-                fedora_versions="$override_versions"
+                file_fedora_versions="$override_versions"
               fi
 
-              for fv in $fedora_versions; do
+              for fv in $file_fedora_versions; do
                 include_array=$(echo "$include_array" | jq -c \
                   --arg spec "$file" \
                   --arg os "$os" \
@@ -64,6 +65,7 @@ jobs:
 
           matrix_json=$(jq -cn --argjson inc "$include_array" '{"include": $inc}')
           echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+  # yamllint enable rule:line-length
   build-spec:
     name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
     needs: detect-changes
@@ -74,6 +76,7 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        # yamllint disable-line rule:line-length
       - name: dagger build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
         # yamllint disable-line rule:line-length
         uses: dagger/dagger-for-github@b81317a976cb7f7125469707321849737cd1b3bc # v7
