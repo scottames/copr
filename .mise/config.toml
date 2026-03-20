@@ -1,0 +1,33 @@
+[tools]
+"aqua:dagger/dagger" = "0.20.3"
+"pipx:copr-cli" = "2.4"
+
+[tasks.build]
+description = "Build a single spec file"
+usage = '''
+arg "<spec_file>" help="Spec file to build"
+flag "--fedora-version <version>" help="Fedora version to build for" default="43"
+'''
+run = '''
+dagger call build-spec-file \
+  --source . \
+  --spec-file "${usage_spec_file?}" \
+  --fedora-version "${usage_fedora_version?}"
+'''
+
+[tasks.build-changed]
+description = "Build all changed spec files"
+run = '''
+#!/usr/bin/env bash
+changed_files=$(git diff --name-only HEAD~1 HEAD -- '*.spec')
+
+if [ -n "$changed_files" ]; then
+  while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    printf 'Building %s...\n' "$file"
+    dagger call build-spec-file --source . --spec-file "$file"
+  done <<< "$changed_files"
+else
+  printf 'No spec files changed\n'
+fi
+'''

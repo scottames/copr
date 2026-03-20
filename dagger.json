@@ -1,8 +1,9 @@
 {
   "name": "copr",
-  "engineVersion": "v0.18.14",
+  "engineVersion": "v0.20.3",
   "sdk": {
     "source": "go"
   },
-  "source": ".dagger"
+  "source": ".dagger",
+  "disableDefaultFunctionCaching": true
 }
