@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           mise
-Version:        2026.3.15
+Version:        2026.3.16
 Release:        1%{?dist}
 Summary:        The front-end to your dev env
 
