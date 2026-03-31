@@ -6,6 +6,7 @@
   schedule: [
     '* * * * *', // explicitly unrestricted
   ],
+  minimumReleaseAge: null,
   automerge: true,
   customManagers: [
     {
