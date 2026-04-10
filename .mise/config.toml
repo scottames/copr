@@ -1,5 +1,5 @@
 [tools]
-"aqua:dagger/dagger" = "0.20.4"
+"aqua:dagger/dagger" = "0.20.5"
 "pipx:copr-cli" = "2.4"
 
 [tasks.build]
