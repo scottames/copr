@@ -1,5 +1,5 @@
 Name:           hyprgraphics
-Version:        0.5.0
+Version:        0.5.1
 Release:        %autorelease -b11
 Summary:        Hyprland graphics / resource utilities
 
@@ -14,7 +14,9 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 
 BuildRequires:  pkgconfig(cairo)
+BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(hyprutils)
+BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjpeg)
 %if 0%{?fedora} >= 41
 BuildRequires:  pkgconfig(libjxl_cms)
