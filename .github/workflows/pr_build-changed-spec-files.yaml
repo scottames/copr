@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "*/*.spec"
+      - ".github/spec-build-targets.json"
 permissions:
   contents: read
   pull-requests: read
@@ -16,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      has-changes: ${{ steps.changed-files.outputs.any_changed }}
+      has-changes: ${{ steps.changed-files.outputs.any_changed == 'true' || steps.changed-build-targets.outputs.any_changed == 'true' }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -29,15 +30,30 @@ jobs:
         with:
           files: |
             **/*.spec
+      - name: changed spec build targets
+        id: changed-build-targets
+        # https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised
+        # yamllint disable-line rule:line-length
+        uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad # v47
+        with:
+          files: |
+            .github/spec-build-targets.json
       - name: Set matrix output
         id: set-matrix
         # yamllint disable rule:line-length
         run: |
+          set -euo pipefail
           build_targets_json=$(jq -c . .github/spec-build-targets.json)
           fedora_versions=$(jq -r '.default_fedora_versions | join(" ")' <<< "$build_targets_json")
           spec_fedora_versions_json=$(jq -c '.spec_overrides' <<< "$build_targets_json")
-          files='${{ steps.changed-files.outputs.all_changed_files }}'
           include_array='[]'
+
+          if [ '${{ steps.changed-build-targets.outputs.any_changed }}' = 'true' ]; then
+            echo "::notice::spec-build-targets changed, building all tracked spec files"
+            files="$(git ls-files -- '**/*.spec')"
+          else
+            files='${{ steps.changed-files.outputs.all_changed_files }}'
+          fi
 
           if [ -n "$files" ]; then
             for file in $files; do
