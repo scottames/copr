@@ -1,5 +1,5 @@
 Name:           hyprwayland-scanner
-Version:        0.4.5
+Version:        0.4.6
 # -b1: patch for protocol-specific dummy_type names
 Release:        %autorelease -b1
 Summary:        A Hyprland implementation of wayland-scanner, in and for C++
