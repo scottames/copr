@@ -23,6 +23,16 @@ The CI guard only evaluates specs changed in the current PR. When a spec's
 `%autorelease -b0`, or `1%{?dist}`. Nonzero `%autorelease -bN` and `N%{?dist}`
 values are treated as stale after a version bump.
 
+When bumping the maximum default Fedora target, update these together in the
+same PR:
+
+- `.github/spec-build-targets.json` `default_fedora_versions`
+- `.github/workflows/spec-guards.yaml` `jobs.spec-guards.container`
+- `.github/renovate.json5` spec-guards Fedora `allowedVersions` package rule
+
+The spec guard check enforces these values stay aligned so Renovate does not
+advance the guard container before the repo's spec build targets are ready.
+
 ## Helper Scripts
 
 Use `scripts/add-temporary-spec-patch.sh` when adding a temporary downstream

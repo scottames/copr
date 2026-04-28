@@ -22,6 +22,9 @@ run_case() {
 
     git -C "$tmpdir" init --initial-branch=main >/dev/null
     mkdir -p "$tmpdir/pkg"
+    pushd "$tmpdir" >/dev/null
+    write_guard_config 44 44 44
+    popd >/dev/null
 
     local status=0
     local output
@@ -64,6 +67,41 @@ Example package.
 
 %prep
 %autosetup -p1
+EOF
+}
+
+write_guard_config() {
+    local target_version=$1
+    local workflow_version=$2
+    local renovate_version=$3
+
+    mkdir -p .github/workflows
+    cat > .github/spec-build-targets.json <<EOF
+{
+  "default_fedora_versions": ["42", "43", "$target_version"],
+  "spec_overrides": {}
+}
+EOF
+    cat > .github/workflows/spec-guards.yaml <<EOF
+---
+name: spec guards
+jobs:
+  spec-guards:
+    container: fedora:$workflow_version@sha256:test
+EOF
+    cat > .github/renovate.json5 <<EOF
+{
+  packageRules: [
+    {
+      description: 'Keep spec-guards Fedora container aligned with .github/spec-build-targets.json',
+      matchManagers: ['github-actions'],
+      matchDatasources: ['docker'],
+      matchFileNames: ['.github/workflows/spec-guards.yaml'],
+      matchPackageNames: ['fedora'],
+      allowedVersions: '/^$renovate_version$/',
+    },
+  ],
+}
 EOF
 }
 
