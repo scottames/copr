@@ -54,7 +54,7 @@ changed_specs() {
 }
 
 check_patch_guards() {
-    local base=$1
+    local changed_specs_list=$1
     local spec
     local current_version
     local guard_version
@@ -80,11 +80,12 @@ check_patch_guards() {
                 error "$spec" "patch guard expired: Version is $current_version, remove-after-version is $guard_version, reason: $reason. Remove the guarded patch if upstream includes the fix."
             fi
         done < <(grep -E '^[[:space:]]*#[[:space:]]*patch-guard:[[:space:]]' "$spec" || true)
-    done < <(changed_specs "$base")
+    done <<< "$changed_specs_list"
 }
 
 check_release_resets() {
     local base=$1
+    local changed_specs_list=$2
     local spec
     local base_content
     local base_version
@@ -116,11 +117,12 @@ check_release_resets() {
         if [ "$base_version" != "$current_version" ] && ! release_is_reset "$current_release"; then
             error "$spec" "Version changed from $base_version to $current_version, but Release was not reset. Current Release: $current_release. Expected one of: %autorelease, %autorelease -b0, 1%{?dist}."
         fi
-    done < <(changed_specs "$base")
+    done <<< "$changed_specs_list"
 }
 
 base=$(base_ref)
-check_patch_guards "$base"
-check_release_resets "$base"
+changed_specs_list=$(changed_specs "$base")
+check_patch_guards "$changed_specs_list"
+check_release_resets "$base" "$changed_specs_list"
 
 exit "$failures"
