@@ -37,6 +37,59 @@ release_is_reset() {
     [[ "$release" =~ ^%autorelease([[:space:]]+-b0)?$ ]] || [[ "$release" == '1%{?dist}' ]]
 }
 
+max_default_fedora_version() {
+    jq -r '.default_fedora_versions | map(tonumber) | max | tostring' .github/spec-build-targets.json
+}
+
+spec_guard_workflow_fedora_version() {
+    awk '
+        /^[[:space:]]*container:[[:space:]]*"?fedora:[0-9]+/ {
+            sub(/^[[:space:]]*container:[[:space:]]*"?fedora:/, "")
+            sub(/[^0-9].*$/, "")
+            print
+            exit
+        }
+    ' .github/workflows/spec-guards.yaml
+}
+
+renovate_spec_guard_fedora_version() {
+    awk '
+        /Keep spec-guards Fedora container aligned/ { in_rule = 1 }
+        in_rule && /allowedVersions:/ {
+            sub(/^.*\^/, "")
+            sub(/\$.*$/, "")
+            print
+            exit
+        }
+    ' .github/renovate.json5
+}
+
+check_fedora_target_alignment() {
+    local target_version
+    local workflow_version
+    local renovate_version
+
+    target_version=$(max_default_fedora_version)
+    workflow_version=$(spec_guard_workflow_fedora_version)
+    renovate_version=$(renovate_spec_guard_fedora_version)
+
+    if [ -z "$target_version" ] || [ "$target_version" = null ]; then
+        error .github/spec-build-targets.json 'could not determine max default Fedora version'
+    fi
+
+    if [ -z "$workflow_version" ]; then
+        error .github/workflows/spec-guards.yaml 'could not determine spec guard Fedora container version'
+    elif [ "$workflow_version" != "$target_version" ]; then
+        error .github/workflows/spec-guards.yaml "spec guard Fedora container is $workflow_version, but max default Fedora target is $target_version"
+    fi
+
+    if [ -z "$renovate_version" ]; then
+        error .github/renovate.json5 'could not determine spec guard Fedora Renovate allowed version'
+    elif [ "$renovate_version" != "$target_version" ]; then
+        error .github/renovate.json5 "spec guard Fedora Renovate allowed version is $renovate_version, but max default Fedora target is $target_version"
+    fi
+}
+
 base_ref() {
     if [ -n "${SPEC_GUARDS_BASE_REF:-}" ]; then
         printf '%s\n' "$SPEC_GUARDS_BASE_REF"
@@ -119,6 +172,8 @@ check_release_resets() {
         fi
     done <<< "$changed_specs_list"
 }
+
+check_fedora_target_alignment
 
 base=$(base_ref)
 changed_specs_list=$(changed_specs "$base")

@@ -9,6 +9,8 @@ on:
       - scripts/fix-spec-guards.sh
       - scripts/test-check-spec-guards.sh
       - scripts/test-spec-helper-scripts.sh
+      - .github/renovate.json5
+      - .github/spec-build-targets.json
       - .github/workflows/spec-guards.yaml
   workflow_dispatch:
 permissions:
@@ -20,10 +22,10 @@ concurrency:
 jobs:
   spec-guards:
     runs-on: ubuntu-latest
-    container: fedora:45@sha256:8b838b3253cb855b1e5c3e1366fd0cda28cd1cc4c3517d625847172fd4ac6869
+    container: fedora:44@sha256:498c452f32a739b61f0ef215bce9924ebc4866cbe44710f58157d77723b7a6d2
     steps:
       - name: Install dependencies
-        run: dnf install -y git rpm
+        run: dnf install -y git jq rpm
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0

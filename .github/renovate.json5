@@ -8,6 +8,16 @@
   ],
   minimumReleaseAge: null,
   automerge: true,
+  packageRules: [
+    {
+      description: 'Keep spec-guards Fedora container aligned with .github/spec-build-targets.json',
+      matchManagers: ['github-actions'],
+      matchDatasources: ['docker'],
+      matchFileNames: ['.github/workflows/spec-guards.yaml'],
+      matchPackageNames: ['fedora'],
+      allowedVersions: '/^44$/',
+    },
+  ],
   customManagers: [
     {
       customType: 'regex',
