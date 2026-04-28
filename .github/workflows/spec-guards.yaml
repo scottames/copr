@@ -1,0 +1,35 @@
+---
+name: spec guards
+on:
+  pull_request:
+    paths:
+      - "*/*.spec"
+      - scripts/add-temporary-spec-patch.sh
+      - scripts/check-spec-guards.sh
+      - scripts/fix-spec-guards.sh
+      - scripts/test-check-spec-guards.sh
+      - scripts/test-spec-helper-scripts.sh
+      - .github/workflows/spec-guards.yaml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  # yamllint disable-line rule:line-length
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  spec-guards:
+    runs-on: ubuntu-latest
+    container: fedora:44
+    steps:
+      - name: Install dependencies
+        run: dnf install -y git rpm
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+      - name: Run spec guard tests
+        run: scripts/test-check-spec-guards.sh
+      - name: Run spec helper tests
+        run: scripts/test-spec-helper-scripts.sh
+      - name: Run spec guards
+        run: scripts/check-spec-guards.sh
