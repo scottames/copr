@@ -27,6 +27,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
+      - name: Trust workspace git directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Run spec guard tests
         run: scripts/test-check-spec-guards.sh
       - name: Run spec helper tests

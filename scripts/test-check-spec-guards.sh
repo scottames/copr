@@ -117,4 +117,9 @@ License:        MIT
 EOF
 git add pkg/example.spec other/other.spec; git -c core.hooksPath=/dev/null -c user.name=test -c user.email=test@example.invalid commit -m base >/dev/null; git tag --no-sign base-ref; export SPEC_GUARDS_BASE_REF=base-ref; sed -i "s/1.0.0/1.1.0/" other/other.spec; git add other/other.spec; git -c core.hooksPath=/dev/null -c user.name=test -c user.email=test@example.invalid commit -m bump-other >/dev/null'
 
+run_case \
+    'changed spec discovery fails closed when base ref is invalid' \
+    128 \
+    'base_spec 1.0.0 "%autorelease"; git add pkg/example.spec; git -c core.hooksPath=/dev/null -c user.name=test -c user.email=test@example.invalid commit -m base >/dev/null; export SPEC_GUARDS_BASE_REF=missing-base-ref'
+
 exit "$failures"
