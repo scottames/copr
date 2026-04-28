@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fedora Hypr Packaging <packager@example.invalid>
+Date: Tue, 28 Apr 2026 00:00:00 +0000
+Subject: [PATCH] Include mutex for std::mutex
+
+GCC 16 no longer accepts the transitive include that previously exposed
+std::mutex. Include the standard header directly.
+
+This matches upstream main after v0.4.6.
+---
+ src/hyprpicker.hpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/hyprpicker.hpp b/src/hyprpicker.hpp
+index 94ab520..2751093 100644
+--- a/src/hyprpicker.hpp
++++ b/src/hyprpicker.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include <mutex>
+ #include "defines.hpp"
+ #include "helpers/LayerSurface.hpp"
+ #include "helpers/PoolBuffer.hpp"
+-- 
+2.51.0
