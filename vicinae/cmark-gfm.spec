@@ -7,12 +7,13 @@
 Name:           cmark-gfm
 Version:        0.29.0.gfm.13
 Epoch:          1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        CommonMark parsing and rendering
 
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/github/cmark-gfm
 Source0:        https://github.com/github/cmark-gfm/archive/refs/tags/%{version}.tar.gz
+Patch0:         cmark-gfm-cmake-3.5.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -54,7 +55,7 @@ This package provides the cmark-gfm library.
 
 
 %prep
-%autosetup
+%autosetup -p1
 
 
 %build

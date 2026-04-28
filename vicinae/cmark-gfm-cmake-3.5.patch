@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Scott Ames <scottames@users.noreply.github.com>
+Date: Tue, 28 Apr 2026 00:00:00 +0000
+Subject: [PATCH] Raise minimum CMake version to 3.5
+
+CMake 4 removes compatibility with projects that declare a policy
+version older than 3.5. Fedora 44 ships CMake 4, so cmark-gfm fails to
+configure unless the minimum version is raised.
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.5)
+ project(cmark-gfm)
+ 
+ set(PROJECT_VERSION_MAJOR 0)
