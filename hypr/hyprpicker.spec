@@ -7,6 +7,7 @@ Summary:        A wlroots-compatible Wayland color picker
 License:        BSD-3-Clause AND HPND-sell-variant
 URL:            https://github.com/hyprwm/hyprpicker
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+# patch-guard: remove-after-version=0.4.6 reason=upstream-includes-mutex
 Patch0:         hyprpicker-0.4.6-include-mutex.patch
 
 BuildRequires:  cmake
