@@ -20,7 +20,7 @@ concurrency:
 jobs:
   spec-guards:
     runs-on: ubuntu-latest
-    container: fedora:44@sha256:498c452f32a739b61f0ef215bce9924ebc4866cbe44710f58157d77723b7a6d2
+    container: fedora:45@sha256:8b838b3253cb855b1e5c3e1366fd0cda28cd1cc4c3517d625847172fd4ac6869
     steps:
       - name: Install dependencies
         run: dnf install -y git rpm
