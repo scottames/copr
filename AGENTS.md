@@ -66,6 +66,18 @@ target a spec explicitly:
 scripts/fix-spec-guards.sh --apply hypr/example.spec
 ```
 
+Use `scripts/update-hypr-soname.sh` when a Hypr library package build fails
+because a hardcoded `%files` SONAME is stale after a Renovate version bump:
+
+```bash
+scripts/update-hypr-soname.sh hypr/hyprutils.spec
+scripts/update-hypr-soname.sh --apply hypr/hyprutils.spec
+```
+
+The helper compares the spec's hardcoded `lib*.so.N` entry with upstream's
+tagged `CMakeLists.txt` `SOVERSION`. The default mode reports drift only;
+`--apply` updates just the hardcoded SONAME line.
+
 ## Verification
 
 Before finishing spec guard or helper-script changes, run:
@@ -73,6 +85,7 @@ Before finishing spec guard or helper-script changes, run:
 ```bash
 scripts/test-check-spec-guards.sh
 scripts/test-spec-helper-scripts.sh
+scripts/test-update-hypr-soname.sh
 scripts/check-spec-guards.sh
 shellcheck scripts/*.sh
 actionlint .github/workflows/spec-guards.yaml
