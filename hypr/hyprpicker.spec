@@ -1,15 +1,12 @@
 Name:           hyprpicker
-Version:        0.4.6
-Release:        %autorelease -b3
+Version:        0.4.7
+Release:        %autorelease
 Summary:        A wlroots-compatible Wayland color picker
 # LICENSE: BSD-3-Clause
 # protocols/wlr-layer-shell-unstable-v1.xml: HPND-sell-variant
 License:        BSD-3-Clause AND HPND-sell-variant
 URL:            https://github.com/hyprwm/hyprpicker
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-# patch-guard: remove-after-version=0.4.6 reason=upstream-includes-mutex
-Patch0:         hyprpicker-0.4.6-include-mutex.patch
-
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 
