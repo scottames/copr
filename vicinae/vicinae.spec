@@ -3,7 +3,7 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.20.15
+Version:        0.21.0
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
@@ -20,6 +20,7 @@ BuildRequires:  wayland-devel
 BuildRequires:  cmake(Qt6)
 BuildRequires:  cmake(Qt6Quick)
 BuildRequires:  cmake(Qt6Svg)
+BuildRequires:  cmake(Qt6ShaderTools)
 BuildRequires:  cmake(Qt6WaylandClient)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6Keychain)
@@ -84,6 +85,10 @@ sed -i '/^Terminal=False$/d' extra/vicinae.desktop
 sed -i 's/Terminal=False/Terminal=false/' extra/vicinae.desktop
 sed -i 's/^Categories=.*/Categories=Utility;/' extra/vicinae.desktop
 %cmake_install
+install -Dm644 %{buildroot}%{_datadir}/vicinae/native-host/chromium/com.vicinae.vicinae.json \
+    %{buildroot}%{_sysconfdir}/chromium/native-messaging-hosts/com.vicinae.vicinae.json
+install -Dm644 %{buildroot}%{_datadir}/vicinae/native-host/firefox/com.vicinae.vicinae.json \
+    %{buildroot}/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json
 install -Dm644 extra/vicinae.service %{buildroot}%{_userunitdir}/vicinae.service
 
 
@@ -99,10 +104,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/applications/*.desktop
 %{_userunitdir}/vicinae.service
 %{_prefix}/lib/modules-load.d/vicinae.conf
-%{_prefix}/lib/udev/rules.d/70-vicinae.rules
 %{_datadir}/icons/hicolor/512x512/apps/vicinae.png
 %{_datadir}/vicinae/themes/*
-%{_datadir}/vicinae/native-messaging-hosts/*.json.in
+%{_datadir}/vicinae/native-host/*
 
 
 %changelog
