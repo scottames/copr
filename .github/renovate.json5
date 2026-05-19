@@ -232,6 +232,17 @@
     {
       customType: 'regex',
       managerFilePatterns: [
+        '/^voxtype/voxtype\\.spec$/',
+      ],
+      matchStrings: [
+        'Version:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'peteonrails/voxtype',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
         '/^zen-browser/.*\\.spec$/',
       ],
       matchStrings: [
