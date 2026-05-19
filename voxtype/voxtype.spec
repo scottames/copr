@@ -1,16 +1,16 @@
 %global upstream_release 1
 %global upstream_rpm %{name}-%{version}-%{upstream_release}.x86_64.rpm
+%global upstream_rpm_sha256 a0a2630eaa4315fabd5f5d292b1cc230ed11f9edcf154be1c2ad346f01c71871
 %global debug_package %{nil}
 
 Name:           voxtype
-Version:        0.7.2
+Version:        0.7.3
 Release:        1%{?dist}
 Summary:        Push-to-talk voice-to-text for Linux
 
 License:        MIT
 URL:            https://voxtype.io
 Source0:        https://github.com/peteonrails/voxtype/releases/download/v%{version}/%{upstream_rpm}
-Source1:        https://github.com/peteonrails/voxtype/releases/download/v%{version}/SHA256SUMS.txt
 
 ExclusiveArch:  x86_64
 AutoReqProv:    no
@@ -38,16 +38,10 @@ not rebuild Voxtype from source.
 %prep
 %setup -q -c -T
 
-expected_sum="$(awk -v rpm='%{upstream_rpm}' '$2 == rpm { print $1 }' %{SOURCE1})"
-if [ -z "$expected_sum" ]; then
-    echo "ERROR: %{upstream_rpm} is missing from %{SOURCE1}" >&2
-    exit 1
-fi
-
 actual_sum="$(sha256sum %{SOURCE0} | awk '{ print $1 }')"
-if [ "$expected_sum" != "$actual_sum" ]; then
+if [ "%{upstream_rpm_sha256}" != "$actual_sum" ]; then
     echo "ERROR: checksum verification failed for %{upstream_rpm}" >&2
-    echo "Expected: $expected_sum" >&2
+    echo "Expected: %{upstream_rpm_sha256}" >&2
     echo "Actual:   $actual_sum" >&2
     exit 1
 fi
@@ -194,6 +188,7 @@ echo ""
 %doc %{_docdir}/voxtype/README.md
 %{_datadir}/fish/vendor_completions.d/voxtype.fish
 %{_mandir}/man1/voxtype*.1*
+%{_datadir}/voxtype
 %{_datadir}/zsh/site-functions/_voxtype
 
 %changelog

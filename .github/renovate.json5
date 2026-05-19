@@ -18,6 +18,15 @@
       allowedVersions: '/^44$/',
     },
   ],
+  customDatasources: {
+    'voxtype-rpm': {
+      defaultRegistryUrlTemplate: 'https://api.github.com/repos/peteonrails/voxtype/releases',
+      format: 'json',
+      transformTemplates: [
+        '($rpmName:=function($release){"voxtype-" & $replace($release.tag_name,/^v/,"") & "-1.x86_64.rpm"};$rpmAsset:=function($release){($filter($release.assets,function($asset){$asset.name=$rpmName($release) and $contains($asset.digest,/^sha256:[0-9a-f]{64}$/)}))[0]};{"releases":$map($filter($,function($release){$exists($rpmAsset($release))}),function($release){($version:=$replace($release.tag_name,/^v/,"");$asset:=$rpmAsset($release);{"version":$version,"releaseTimestamp":$release.published_at,"changelogUrl":$release.html_url,"sourceUrl":$release.html_url,"digest":$replace($asset.digest,/^sha256:/,"")})}),"sourceUrl":"https://github.com/peteonrails/voxtype","homepage":"https://voxtype.io"})',
+      ],
+    },
+  },
   customManagers: [
     {
       customType: 'regex',
@@ -235,10 +244,12 @@
         '/^voxtype/voxtype\\.spec$/',
       ],
       matchStrings: [
-        'Version:\\s*(?<currentValue>\\S+)',
+        '(?<checksumPrefix>%global\\s+upstream_rpm_sha256\\s+)(?<currentDigest>[0-9a-f]{64})(?<versionPrefix>\\n(?:.*\\n)*?Version:\\s*)(?<currentValue>\\S+)',
       ],
       depNameTemplate: 'peteonrails/voxtype',
-      datasourceTemplate: 'github-releases',
+      datasourceTemplate: 'custom.voxtype-rpm',
+      versioningTemplate: 'semver',
+      autoReplaceStringTemplate: '{{{checksumPrefix}}}{{{newDigest}}}{{{versionPrefix}}}{{{newValue}}}',
     },
     {
       customType: 'regex',
