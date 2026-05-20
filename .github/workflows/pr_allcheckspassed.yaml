@@ -17,7 +17,7 @@ jobs:
       contents: read # required for actions/checkout
     steps:
       # yamllint disable-line rule:line-length
-      - uses: wechuli/allcheckspassed@1d00cf0c34c4b0805db8866d8913f22e7125301e # v2
+      - uses: wechuli/allcheckspassed@204ff63e89eabdc8086f0c50b91f675bcf37c8f6 # v2
         with:
           delay: '3' # default: 1
           retries: '15' # default: 10
