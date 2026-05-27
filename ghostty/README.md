@@ -14,6 +14,48 @@
 - Bugs related to Ghostty application should be reported to the [ghostty-org GitHub org](https://github.com/ghostty-org/ghostty/issues)
 - Bugs related to this package should be reported to [this Git project](https://github.com/scottames/copr/issues)
 
+## Known Issues
+
+### Parallels and Older OpenGL Environments
+
+Ghostty requires OpenGL 4.3. Some virtualized or older graphics environments,
+including Fedora guests running under Parallels Desktop on macOS, may expose only
+OpenGL 4.0 or 4.1. In that case, Ghostty may fail to start with messages like:
+
+```text
+warning(opengl): OpenGL version is too old. Ghostty requires OpenGL 4.3
+warning(gtk_ghostty_surface): failed to initialize surface err=error.OpenGLOutdated
+```
+
+As a workaround, run Ghostty with Mesa software rendering enabled:
+
+```bash
+LIBGL_ALWAYS_SOFTWARE=true ghostty
+```
+
+To apply this workaround to a per-user desktop launcher, copy the packaged
+desktop file and update the `Exec=` line:
+
+```bash
+mkdir -p ~/.local/share/applications
+cp /usr/share/applications/com.mitchellh.ghostty.desktop ~/.local/share/applications/
+```
+
+Change:
+
+```desktop
+Exec=/usr/bin/ghostty --gtk-single-instance=true
+```
+
+to:
+
+```desktop
+Exec=env LIBGL_ALWAYS_SOFTWARE=true /usr/bin/ghostty --gtk-single-instance=true
+```
+
+Software rendering can be slower and should only be used on systems where the
+normal GPU-backed launch path fails.
+
 ## Installation
 
 1. Enable copr repo
