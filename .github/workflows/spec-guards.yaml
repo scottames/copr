@@ -23,7 +23,7 @@ concurrency:
 jobs:
   spec-guards:
     runs-on: ubuntu-latest
-    container: fedora:44@sha256:498c452f32a739b61f0ef215bce9924ebc4866cbe44710f58157d77723b7a6d2
+    container: fedora:44@sha256:6c75d5bf57cb0fa5aa4b92c6a83c86c791644496d9ac230de7711f5b8ec3b898
     steps:
       - name: Install dependencies
         run: dnf install -y git jq rpm
