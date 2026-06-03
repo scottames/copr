@@ -78,7 +78,7 @@ write_guard_config() {
     mkdir -p .github/workflows
     cat > .github/spec-build-targets.json <<EOF
 {
-  "default_fedora_versions": ["42", "43", "$target_version"],
+  "default_fedora_versions": ["43", "$target_version"],
   "spec_overrides": {}
 }
 EOF

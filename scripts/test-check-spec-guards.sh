@@ -63,7 +63,7 @@ write_guard_config() {
     mkdir -p .github/workflows
     cat > .github/spec-build-targets.json <<EOF
 {
-  "default_fedora_versions": ["42", "43", "$target_version"],
+  "default_fedora_versions": ["43", "$target_version"],
   "spec_overrides": {}
 }
 EOF
@@ -171,5 +171,22 @@ run_case \
     'changed spec discovery fails closed when base ref is invalid' \
     128 \
     'base_spec 1.0.0 "%autorelease"; git add pkg/example.spec; git -c core.hooksPath=/dev/null -c user.name=test -c user.email=test@example.invalid commit -m base >/dev/null; export SPEC_GUARDS_BASE_REF=missing-base-ref'
+
+repo_default_versions=$(jq -r '.default_fedora_versions[]' .github/spec-build-targets.json)
+if grep -qx '42' <<< "$repo_default_versions"; then
+    printf 'not ok - repository default Fedora targets exclude EOL Fedora 42\n'
+    failures=$((failures + 1))
+else
+    printf 'ok - repository default Fedora targets exclude EOL Fedora 42\n'
+fi
+
+repo_max_default_version=$(jq -r '.default_fedora_versions | map(tonumber) | max | tostring' .github/spec-build-targets.json)
+if [ "$repo_max_default_version" = 44 ]; then
+    printf 'ok - repository max default Fedora target is 44\n'
+else
+    printf 'not ok - repository max default Fedora target is 44\n'
+    printf 'expected max default target 44, got %s\n' "$repo_max_default_version"
+    failures=$((failures + 1))
+fi
 
 exit "$failures"

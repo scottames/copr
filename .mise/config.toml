@@ -7,7 +7,7 @@
 description = "Build a single spec file"
 usage = '''
 arg "<spec_file>" help="Spec file to build"
-flag "--fedora-version <version>" help="Fedora version to build for" default="43"
+flag "--fedora-version <version>" help="Fedora version to build for" default="44"
 '''
 run = '''
 dagger call build-spec-file \
