@@ -1,0 +1,79 @@
+---
+name: mise
+on:
+  pull_request:
+    paths:
+      - .mise/config.toml
+      - .mise/mise.lock
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  MISE_EXPERIMENTAL: true
+jobs:
+  lock:
+    if: "! github.event.pull_request.head.repo.fork"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # should be used for PRs only
+          # https://github.com/marketplace/actions/add-commit#working-with-prs
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+      # yamllint disable-line rule:line-length
+      - name: Generate GitHub token
+        # https://github.com/actions/create-github-app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: generate-token
+        if: "! github.event.pull_request.head.repo.fork"
+        with:
+          client-id: ${{ secrets.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: write # create releases
+          permission-pull-requests: write # create release pull requests
+      - name: install mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          install: true
+          install_args: aqua:int128/ghcp
+          cache: true
+          experimental: true
+          github_token: ${{ steps.generate-token.outputs.token }}
+      - name: mise lock
+        env:
+          MISE_LOCKED: 0 # disable "locked=true" for update
+        run: rm -f mise/mise.lock && mise lock # rm to prune
+      - name: push changes with ghcp
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          set -eu
+
+          if ! ghcp -v; then
+            echo "::error ::int128/ghcp not found - needed to push."
+            exit 1
+          fi
+
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "::notice ::No lockfile changes needed"
+            exit 0
+          fi
+
+          branch=${GITHUB_HEAD_REF:-} # https://github.com/int128/ghcp
+          if [ -z "${branch}" ]; then
+            branch="${GITHUB_REF_NAME}"
+          fi
+          # shellcheck disable=SC2046
+          # ^- we want it to split!
+          ghcp commit -r "$GITHUB_REPOSITORY" -b "${branch}" \
+            -m "chore(mise): lock" \
+            $(git --no-pager diff --name-only)
+          echo "::notice ::changes pushed to branch, 'exit 1' to force checks"
+          exit 1
