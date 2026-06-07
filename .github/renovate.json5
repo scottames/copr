@@ -26,6 +26,13 @@
         '($rpmName:=function($release){"voxtype-" & $replace($release.tag_name,/^v/,"") & "-1.x86_64.rpm"};$rpmAsset:=function($release){($filter($release.assets,function($asset){$asset.name=$rpmName($release) and $contains($asset.digest,/^sha256:[0-9a-f]{64}$/)}))[0]};{"releases":$map($filter($,function($release){$exists($rpmAsset($release))}),function($release){($version:=$replace($release.tag_name,/^v/,"");$asset:=$rpmAsset($release);{"version":$version,"releaseTimestamp":$release.published_at,"changelogUrl":$release.html_url,"sourceUrl":$release.html_url,"digest":$replace($asset.digest,/^sha256:/,"")})}),"sourceUrl":"https://github.com/peteonrails/voxtype","homepage":"https://voxtype.io"})',
       ],
     },
+    'zennotes-deb': {
+      defaultRegistryUrlTemplate: 'https://api.github.com/repos/ZenNotes/zennotes/releases',
+      format: 'json',
+      transformTemplates: [
+        '($debName:=function($release){"ZenNotes-" & $replace($release.tag_name,/^v/,"") & "-linux-amd64.deb"};$debAsset:=function($release){($filter($release.assets,function($asset){$asset.name=$debName($release) and $contains($asset.digest,/^sha256:[0-9a-f]{64}$/)}))[0]};{"releases":$map($filter($,function($release){$contains($release.tag_name,/^v/) and $exists($debAsset($release))}),function($release){($version:=$replace($release.tag_name,/^v/,"");$asset:=$debAsset($release);{"version":$version,"releaseTimestamp":$release.published_at,"changelogUrl":$release.html_url,"sourceUrl":$release.html_url,"digest":$replace($asset.digest,/^sha256:/,"")})}),"sourceUrl":"https://github.com/ZenNotes/zennotes","homepage":"https://github.com/ZenNotes/zennotes"})',
+      ],
+    },
   },
   customManagers: [
     {
@@ -248,6 +255,19 @@
       ],
       depNameTemplate: 'peteonrails/voxtype',
       datasourceTemplate: 'custom.voxtype-rpm',
+      versioningTemplate: 'semver',
+      autoReplaceStringTemplate: '{{{checksumPrefix}}}{{{newDigest}}}{{{versionPrefix}}}{{{newValue}}}',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^zennotes/zennotes\\.spec$/',
+      ],
+      matchStrings: [
+        '(?<checksumPrefix>%global\\s+upstream_deb_sha256\\s+)(?<currentDigest>[0-9a-f]{64})(?<versionPrefix>\\n(?:.*\\n)*?Version:\\s*)(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'ZenNotes/zennotes',
+      datasourceTemplate: 'custom.zennotes-deb',
       versioningTemplate: 'semver',
       autoReplaceStringTemplate: '{{{checksumPrefix}}}{{{newDigest}}}{{{versionPrefix}}}{{{newValue}}}',
     },

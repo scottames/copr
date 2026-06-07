@@ -10,6 +10,7 @@ on:
       - scripts/test-check-spec-guards.sh
       - scripts/test-spec-helper-scripts.sh
       - scripts/test-voxtype-renovate-checksum.sh
+      - scripts/test-zennotes-renovate-checksum.sh
       - .github/renovate.json5
       - .github/spec-build-targets.json
       - .github/workflows/spec-guards.yaml
@@ -38,5 +39,7 @@ jobs:
         run: scripts/test-spec-helper-scripts.sh
       - name: Run Voxtype Renovate checksum tests
         run: scripts/test-voxtype-renovate-checksum.sh
+      - name: Run ZenNotes Renovate checksum tests
+        run: scripts/test-zennotes-renovate-checksum.sh
       - name: Run spec guards
         run: scripts/check-spec-guards.sh
