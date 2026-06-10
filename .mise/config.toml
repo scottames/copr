@@ -1,5 +1,5 @@
 [tools]
-"aqua:dagger/dagger" = "0.21.4"
+"aqua:dagger/dagger" = "0.21.5"
 "aqua:int128/ghcp" = "1.15.3"
 "pipx:copr-cli" = "2.5"
 
