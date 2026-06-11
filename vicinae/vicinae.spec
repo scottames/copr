@@ -35,6 +35,7 @@ BuildRequires:  pkgconfig(libcmark-gfm)
 BuildRequires:  pkgconfig(libqalculate)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(protobuf)
+BuildRequires:  pkgconfig(xcb-keysyms)
 
 BuildRequires:  nodejs-npm
 BuildRequires:  minizip-compat-devel
