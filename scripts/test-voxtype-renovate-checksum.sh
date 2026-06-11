@@ -59,9 +59,9 @@ assert_grep "datasourceTemplate: 'custom\.voxtype-rpm'" \
 assert_grep 'currentDigest' \
     .github/renovate.json5 \
     'renovate captures the current RPM sha256 digest'
-assert_grep 'autoReplaceStringTemplate' \
+assert_no_grep 'autoReplaceStringTemplate' \
     .github/renovate.json5 \
-    'renovate replaces version and RPM sha256 together'
+    'renovate lets default autoreplace update version and RPM sha256 together'
 assert_grep 'rpmName:=function.*-1\.x86_64\.rpm' \
     .github/renovate.json5 \
     'renovate filters releases to the matching RPM asset'

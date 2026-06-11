@@ -256,7 +256,6 @@
       depNameTemplate: 'peteonrails/voxtype',
       datasourceTemplate: 'custom.voxtype-rpm',
       versioningTemplate: 'semver',
-      autoReplaceStringTemplate: '{{{checksumPrefix}}}{{{newDigest}}}{{{versionPrefix}}}{{{newValue}}}',
     },
     {
       customType: 'regex',
@@ -269,7 +268,6 @@
       depNameTemplate: 'ZenNotes/zennotes',
       datasourceTemplate: 'custom.zennotes-deb',
       versioningTemplate: 'semver',
-      autoReplaceStringTemplate: '{{{checksumPrefix}}}{{{newDigest}}}{{{versionPrefix}}}{{{newValue}}}',
     },
     {
       customType: 'regex',

@@ -95,8 +95,32 @@ assert_grep "datasourceTemplate: 'custom\.zennotes-deb'" \
     'renovate uses the ZenNotes DEB custom datasource'
 assert_zennotes_manager_grep 'upstream_deb_sha256.*currentDigest' \
     'renovate captures the current DEB sha256 digest'
-assert_zennotes_manager_grep 'autoReplaceStringTemplate' \
-    'renovate replaces version and DEB sha256 together'
+if awk '
+    /^    \{/ {
+        block = $0 ORS
+        in_block = 1
+        is_zennotes = 0
+        next
+    }
+    in_block {
+        block = block $0 ORS
+        if (index($0, "zennotes/zennotes") > 0) {
+            is_zennotes = 1
+        }
+        if ($0 ~ /^    \},/) {
+            if (is_zennotes && block ~ /autoReplaceStringTemplate/) {
+                found = 1
+            }
+            in_block = 0
+            block = ""
+        }
+    }
+    END { exit found ? 0 : 1 }
+' .github/renovate.json5; then
+    fail 'renovate lets default autoreplace update version and DEB sha256 together'
+else
+    pass 'renovate lets default autoreplace update version and DEB sha256 together'
+fi
 assert_grep 'debName:=function.*linux-amd64\.deb' \
     .github/renovate.json5 \
     'renovate filters releases to the matching Linux amd64 DEB asset'
