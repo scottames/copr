@@ -57,6 +57,27 @@ assert_grep '%\{upstream_deb_sha256\}' \
 assert_grep '%\{_bindir\}/zen' \
     zennotes/zennotes.spec \
     'zennotes spec provides the bundled zen CLI wrapper'
+assert_grep '^%global[[:space:]]+app_dir[[:space:]]+%\{_libdir\}/%\{name\}$' \
+    zennotes/zennotes.spec \
+    'zennotes app payload installs under the Fedora private libdir'
+assert_no_grep '^%global[[:space:]]+app_dir[[:space:]]+/opt/ZenNotes$' \
+    zennotes/zennotes.spec \
+    'zennotes app_dir does not install into /opt'
+assert_no_grep 'ln -s .*opt/ZenNotes' \
+    zennotes/zennotes.spec \
+    'zennotes launch symlinks do not target /opt'
+assert_grep 'ln -s \.\./%\{_lib\}/%\{name\}/ZenNotes[[:space:]]+%\{buildroot\}%\{_bindir\}/zennotes' \
+    zennotes/zennotes.spec \
+    'zennotes desktop launcher symlink targets relocated app relatively'
+assert_grep 'ln -s \.\./%\{_lib\}/%\{name\}/resources/zen[[:space:]]+%\{buildroot\}%\{_bindir\}/zen' \
+    zennotes/zennotes.spec \
+    'zennotes CLI symlink targets relocated wrapper relatively'
+assert_grep 'Exec=%\{app_dir\}/ZenNotes %U' \
+    zennotes/zennotes.spec \
+    'zennotes desktop file Exec points at relocated app path'
+assert_grep 'find %\{buildroot\}%\{app_dir\} -perm /6000' \
+    zennotes/zennotes.spec \
+    'zennotes check audits privileged files in relocated payload'
 
 assert_zennotes_manager_grep() {
     local pattern=$1

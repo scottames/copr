@@ -1,6 +1,6 @@
 %global upstream_deb ZenNotes-%{version}-linux-amd64.deb
 %global upstream_deb_sha256 f01cbc01e39f6d052d460395c8877dd43eb5d3444ff0999ed10a75a4c33c7cf5
-%global app_dir /opt/ZenNotes
+%global app_dir %{_libdir}/%{name}
 %global debug_package %{nil}
 
 Name:           zennotes
@@ -89,19 +89,29 @@ test -d payload/usr/share/mime/packages
 
 %install
 mkdir -p %{buildroot}
-cp -a payload/opt payload/usr %{buildroot}/
+
+# Upstream's DEB installs the Electron app under /opt/ZenNotes. On Fedora
+# Atomic/rpm-ostree systems /opt is a mutable /var/opt location, so RPM-owned
+# application payloads should live under /usr instead. Keep the upstream
+# payload contents intact, but relocate them into Fedora's private libdir and
+# patch the launchers below to avoid owning or depending on /opt.
+cp -a payload/usr %{buildroot}/
+install -d %{buildroot}%{app_dir}
+cp -a payload/opt/ZenNotes/. %{buildroot}%{app_dir}/
 
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_licensedir}/%{name}/LICENSE
 mkdir -p %{buildroot}%{_bindir}
-ln -s ../../opt/ZenNotes/ZenNotes %{buildroot}%{_bindir}/zennotes
-ln -s ../../opt/ZenNotes/resources/zen %{buildroot}%{_bindir}/zen
+ln -s ../%{_lib}/%{name}/ZenNotes %{buildroot}%{_bindir}/zennotes
+ln -s ../%{_lib}/%{name}/resources/zen %{buildroot}%{_bindir}/zen
 
 # Upstream Linux update metadata points at GitHub AppImage/DEB assets. COPR/DNF
 # should remain the update path for this RPM package.
 rm -f %{buildroot}%{app_dir}/resources/app-update.yml
 rm -f %{buildroot}%{app_dir}/resources/package-type
 
-sed -i 's/text\/markdown;text\/markdown;/text\/markdown;/' \
+sed -i \
+    -e 's|Exec=/opt/ZenNotes/ZenNotes %U|Exec=%{app_dir}/ZenNotes %U|' \
+    -e 's/text\/markdown;text\/markdown;/text\/markdown;/' \
     %{buildroot}%{_datadir}/applications/ZenNotes.desktop
 chmod 4755 %{buildroot}%{app_dir}/chrome-sandbox
 
@@ -113,8 +123,20 @@ test ! -f %{buildroot}%{app_dir}/resources/app-update.yml
 test ! -f %{buildroot}%{app_dir}/resources/package-type
 test -L %{buildroot}%{_bindir}/zennotes
 test -L %{buildroot}%{_bindir}/zen
+test "$(readlink %{buildroot}%{_bindir}/zennotes)" = "../%{_lib}/%{name}/ZenNotes"
+test "$(readlink %{buildroot}%{_bindir}/zen)" = "../%{_lib}/%{name}/resources/zen"
 test -x %{buildroot}%{_bindir}/zennotes
 test -x %{buildroot}%{_bindir}/zen
+grep -qx 'Exec=%{app_dir}/ZenNotes %U' \
+    %{buildroot}%{_datadir}/applications/ZenNotes.desktop
+! grep -q '/opt/ZenNotes' %{buildroot}%{_datadir}/applications/ZenNotes.desktop
+privileged_files="$(find %{buildroot}%{app_dir} -perm /6000 -printf '%%p\n')"
+expected_privileged_file="%{buildroot}%{app_dir}/chrome-sandbox"
+if [ "$privileged_files" != "$expected_privileged_file" ]; then
+    echo "ERROR: unexpected setuid/setgid files in %{app_dir}" >&2
+    printf 'Expected:\n%s\nActual:\n%s\n' "$expected_privileged_file" "$privileged_files" >&2
+    exit 1
+fi
 desktop-file-validate %{buildroot}%{_datadir}/applications/ZenNotes.desktop
 mkdir -p mime-check/mime
 cp -a %{buildroot}%{_datadir}/mime/packages mime-check/mime/
