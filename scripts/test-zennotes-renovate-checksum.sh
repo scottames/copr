@@ -78,6 +78,9 @@ assert_grep 'Exec=%\{app_dir\}/ZenNotes %U' \
 assert_grep 'find %\{buildroot\}%\{app_dir\} -perm /6000' \
     zennotes/zennotes.spec \
     'zennotes check audits privileged files in relocated payload'
+assert_grep 'rm -f %\{buildroot\}%\{app_dir\}/LICENSE' \
+    zennotes/zennotes.spec \
+    'zennotes removes the duplicate bundled app license'
 
 assert_zennotes_manager_grep() {
     local pattern=$1

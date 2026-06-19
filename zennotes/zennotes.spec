@@ -106,6 +106,7 @@ ln -s ../%{_lib}/%{name}/resources/zen %{buildroot}%{_bindir}/zen
 
 # Upstream Linux update metadata points at GitHub AppImage/DEB assets. COPR/DNF
 # should remain the update path for this RPM package.
+rm -f %{buildroot}%{app_dir}/LICENSE
 rm -f %{buildroot}%{app_dir}/resources/app-update.yml
 rm -f %{buildroot}%{app_dir}/resources/package-type
 
