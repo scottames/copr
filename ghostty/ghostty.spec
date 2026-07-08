@@ -1,6 +1,6 @@
 Name:           ghostty
 Version:        1.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration
 
 
@@ -67,7 +67,8 @@ DESTDIR=%{buildroot} zig build \
     -Dpie=true \
     -Dstrip=false \
     -Demit-docs \
-    -Demit-themes=true
+    -Demit-themes=true \
+    -fsys=fontconfig
 
 %if 0%{?fedora} >= 42
     rm -f "%{buildroot}%{_prefix}/share/terminfo/g/ghostty"
