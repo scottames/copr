@@ -1,10 +1,10 @@
 %global upstream_deb ZenNotes-%{version}-linux-amd64.deb
-%global upstream_deb_sha256 d9fe0584191e39c37f27ca73c3673e2d4569498904ddce82becc46da0345b7fa
+%global upstream_deb_sha256 ebd1d1077aa72efb983ed3d7b1c1fb27cf59bf70bbc1f0c4d4892036b2095247
 %global app_dir %{_libdir}/%{name}
 %global debug_package %{nil}
 
 Name:           zennotes
-Version:        2.12.0
+Version:        2.13.0
 Release:        1%{?dist}
 Summary:        Markdown notes app with local-first vaults
 
