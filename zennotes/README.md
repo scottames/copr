@@ -10,14 +10,14 @@
 [ZenNotes](https://github.com/ZenNotes/zennotes) packaged for Fedora and
 published to [copr](https://copr.fedorainfracloud.org/coprs/scottames/zennotes).
 
-This package republishes the official upstream GitHub Release DEB so Fedora can
+This package republishes the official upstream GitHub Release RPM so Fedora can
 install and update ZenNotes through normal DNF/COPR metadata.
 
 >[!WARNING]
 > This copr is intended for my personal use only.
 > Use at your own risk.
 >
-> - This package uses upstream's prebuilt Electron DEB; it does not rebuild
+> - This package uses upstream's prebuilt Electron RPM; it does not rebuild
 >   ZenNotes from source.
 > - Updates should be installed through DNF/COPR, not the app's upstream
 >   self-updater.
@@ -61,6 +61,9 @@ sudo dnf upgrade zennotes
 
 ## Notes
 
-- Fedora builds are x86_64 only for now, matching upstream's Linux DEB asset.
-- The package provides `zennotes` for the desktop app and `zen` for the bundled
-  ZenNotes CLI wrapper.
+- Fedora builds are x86_64 only for now, matching the selected upstream RPM
+  asset.
+- The package provides `zennotes` for the desktop app.
+- To enable the bundled `zn` CLI, open **Settings -> CLI** in ZenNotes and
+  select **Install**. ZenNotes manages that command separately; the RPM owns
+  neither `zn` nor the legacy `zen` command.
