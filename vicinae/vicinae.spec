@@ -87,10 +87,6 @@ sed -i '/^Terminal=False$/d' extra/vicinae.desktop
 sed -i 's/Terminal=False/Terminal=false/' extra/vicinae.desktop
 sed -i 's/^Categories=.*/Categories=Utility;/' extra/vicinae.desktop
 %cmake_install
-install -Dm644 %{buildroot}%{_datadir}/vicinae/native-host/chromium/com.vicinae.vicinae.json \
-    %{buildroot}%{_sysconfdir}/chromium/native-messaging-hosts/com.vicinae.vicinae.json
-install -Dm644 %{buildroot}%{_datadir}/vicinae/native-host/firefox/com.vicinae.vicinae.json \
-    %{buildroot}/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json
 install -Dm644 extra/vicinae.service %{buildroot}%{_userunitdir}/vicinae.service
 
 
@@ -101,14 +97,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %files
 %{_bindir}/vicinae
 %{_libexecdir}/vicinae/*
-%{_sysconfdir}/chromium/native-messaging-hosts/com.vicinae.vicinae.json
-/usr/lib/mozilla/native-messaging-hosts/com.vicinae.vicinae.json
 %{_datadir}/applications/*.desktop
 %{_userunitdir}/vicinae.service
 %{_prefix}/lib/modules-load.d/vicinae.conf
 %{_datadir}/icons/hicolor/512x512/apps/vicinae.png
 %{_datadir}/vicinae/themes/*
-%{_datadir}/vicinae/native-host/*
 
 
 %changelog
