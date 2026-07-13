@@ -7,30 +7,37 @@ backend = "aqua:dagger/dagger"
 [tools."aqua:dagger/dagger"."platforms.linux-arm64"]
 checksum = "sha256:780e8ddc4269aeee94ef21ab7cb06ca2ee04abec5486eba53f49a7549d99637d"
 url = "https://github.com/dagger/dagger/releases/download/v0.21.7/dagger_v0.21.7_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dagger/dagger/releases/assets/450438335"
 
 [tools."aqua:dagger/dagger"."platforms.linux-arm64-musl"]
 checksum = "sha256:780e8ddc4269aeee94ef21ab7cb06ca2ee04abec5486eba53f49a7549d99637d"
 url = "https://github.com/dagger/dagger/releases/download/v0.21.7/dagger_v0.21.7_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dagger/dagger/releases/assets/450438335"
 
 [tools."aqua:dagger/dagger"."platforms.linux-x64"]
 checksum = "sha256:44430afc6f9c390fc47c4f352b15de9309a5e97ebd1ae563839617d6df8e8cc5"
 url = "https://github.com/dagger/dagger/releases/download/v0.21.7/dagger_v0.21.7_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dagger/dagger/releases/assets/450438338"
 
 [tools."aqua:dagger/dagger"."platforms.linux-x64-musl"]
 checksum = "sha256:44430afc6f9c390fc47c4f352b15de9309a5e97ebd1ae563839617d6df8e8cc5"
 url = "https://github.com/dagger/dagger/releases/download/v0.21.7/dagger_v0.21.7_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dagger/dagger/releases/assets/450438338"
 
 [tools."aqua:dagger/dagger"."platforms.macos-arm64"]
 checksum = "sha256:bb1472cd71efe40b9a5d192944eb0b095e8f5566e1879d16864f2d60e79d9c77"
 url = "https://github.com/dagger/dagger/releases/download/v0.21.7/dagger_v0.21.7_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dagger/dagger/releases/assets/450438333"
 
 [tools."aqua:dagger/dagger"."platforms.macos-x64"]
 checksum = "sha256:883b30499067c68903bd4c53088a70640fd8a3044d2ac02bd7787cfcf365017b"
 url = "https://github.com/dagger/dagger/releases/download/v0.21.7/dagger_v0.21.7_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dagger/dagger/releases/assets/450438337"
 
 [tools."aqua:dagger/dagger"."platforms.windows-x64"]
 checksum = "sha256:d1d2f98f38676cf48198458a54b61da4008fa7beacc767310ceca91303363991"
 url = "https://github.com/dagger/dagger/releases/download/v0.21.7/dagger_v0.21.7_windows_amd64.zip"
+url_api = "https://api.github.com/repos/dagger/dagger/releases/assets/450438336"
 
 [[tools."aqua:int128/ghcp"]]
 version = "1.15.3"
@@ -39,30 +46,37 @@ backend = "aqua:int128/ghcp"
 [tools."aqua:int128/ghcp"."platforms.linux-arm64"]
 checksum = "sha256:4e4a750eae73f3c63084e9e4a97b93ffc44dd60b64ff587df98f7bfa85199901"
 url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_linux_arm64.zip"
+url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091689"
 
 [tools."aqua:int128/ghcp"."platforms.linux-arm64-musl"]
 checksum = "sha256:4e4a750eae73f3c63084e9e4a97b93ffc44dd60b64ff587df98f7bfa85199901"
 url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_linux_arm64.zip"
+url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091689"
 
 [tools."aqua:int128/ghcp"."platforms.linux-x64"]
 checksum = "sha256:537b71c1382fc95c73702d4ba0fc1a2465842a1c20f9987d75b5c7581ba115ea"
 url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_linux_amd64.zip"
+url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091706"
 
 [tools."aqua:int128/ghcp"."platforms.linux-x64-musl"]
 checksum = "sha256:537b71c1382fc95c73702d4ba0fc1a2465842a1c20f9987d75b5c7581ba115ea"
 url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_linux_amd64.zip"
+url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091706"
 
 [tools."aqua:int128/ghcp"."platforms.macos-arm64"]
 checksum = "sha256:83c8fb1e167adbfbe767288e9679d1a34b8a59241e56f84379ff9b9e1ae709f2"
 url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_darwin_arm64.zip"
+url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091783"
 
 [tools."aqua:int128/ghcp"."platforms.macos-x64"]
 checksum = "sha256:5553fba0e479ec6ae55a479399e64fe78a1b0242e85b8be2c65e2ba6a1d4aef9"
 url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_darwin_amd64.zip"
+url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091693"
 
 [tools."aqua:int128/ghcp"."platforms.windows-x64"]
 checksum = "sha256:42b101dfaa7e7a66585ecbf262c2c2111bbd00e7cdb063b554bc7df467744cb1"
 url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_windows_amd64.zip"
+url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091732"
 
 [[tools."pipx:copr-cli"]]
 version = "2.5"
