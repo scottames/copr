@@ -5,7 +5,7 @@
 
 Name:           zennotes
 Version:        2.13.2
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Markdown notes app with local-first vaults
 
 License:        MIT
