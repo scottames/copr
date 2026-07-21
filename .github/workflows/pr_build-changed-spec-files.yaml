@@ -20,7 +20,7 @@ jobs:
       # yamllint disable-line rule:line-length
       has-changes: ${{ steps.changed-files.outputs.any_changed == 'true' || steps.changed-build-targets.outputs.any_changed == 'true' }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
       - name: changed spec files
@@ -91,7 +91,7 @@ jobs:
       matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         # yamllint disable-line rule:line-length
       - name: dagger build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
         # yamllint disable-line rule:line-length
