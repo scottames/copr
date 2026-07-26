@@ -236,6 +236,3 @@ update-mime-database -n %{_datadir}/mime || :
 %{app_dir}/v8_context_snapshot.bin
 %{app_dir}/vk_swiftshader_icd.json
 %{app_dir}/ZenNotes
-
-%changelog
-%autochangelog
