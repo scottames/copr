@@ -48,8 +48,8 @@ tar -xf %{upstream_source} --strip-components=1
 
 %install
 install -Dpm 0755 zig %{buildroot}%{_bindir}/zig
-mkdir -p %{buildroot}%{_libdir}
-cp -a lib %{buildroot}%{_libdir}/zig
+mkdir -p %{buildroot}%{_prefix}/lib
+cp -a lib %{buildroot}%{_prefix}/lib/zig
 
 %check
 test "$(%{buildroot}%{_bindir}/zig version)" = "%{version}"
@@ -58,7 +58,7 @@ test "$(%{buildroot}%{_bindir}/zig version)" = "%{version}"
 %license LICENSE
 %doc README.md
 %{_bindir}/zig
-%{_libdir}/zig/
+%{_prefix}/lib/zig/
 
 %changelog
 %autochangelog
