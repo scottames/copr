@@ -79,5 +79,5 @@ url = "https://github.com/int128/ghcp/releases/download/v1.15.3/ghcp_windows_amd
 url_api = "https://api.github.com/repos/int128/ghcp/releases/assets/394091732"
 
 [[tools."pipx:copr-cli"]]
-version = "2.5"
+version = "2.6"
 backend = "pipx:copr-cli"
