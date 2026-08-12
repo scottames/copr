@@ -1,6 +1,6 @@
 Name:           ghostty
 Version:        1.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration
 
 
@@ -26,7 +26,7 @@ BuildRequires: pandoc-cli
 BuildRequires: pixman-devel
 BuildRequires: pkg-config
 BuildRequires: wayland-protocols-devel
-BuildRequires: zig
+BuildRequires: zig015 = 0.15.2
 BuildRequires: zlib-ng-devel
 
 
