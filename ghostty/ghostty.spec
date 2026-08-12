@@ -1,6 +1,6 @@
 Name:           ghostty
 Version:        1.3.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration
 
 
@@ -13,6 +13,7 @@ ExclusiveArch: x86_64 aarch64
 
 
 BuildRequires: blueprint-compiler
+BuildRequires: bzip2-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freetype-devel
 BuildRequires: glib2-devel
@@ -58,9 +59,17 @@ This package provides the development files for libghostty-vt.
 
 
 %build
+# Link the system fontconfig/freetype/harfbuzz rather than letting zig vendor
+# them. Without -fsys=, zig statically links its own copies *and* exports their
+# symbols from the executable, while GTK4 separately pulls in the system libs.
+# The executable wins global symbol resolution, so GTK's Fc*/FT_*/hb_* calls are
+# interposed into the vendored copies while operating on system-lib state.
 DESTDIR=%{buildroot} zig build \
     --summary all \
     --prefix "%{_prefix}" \
+    -fsys=fontconfig \
+    -fsys=freetype \
+    -fsys=harfbuzz \
     -Dversion-string=%{version}-%{release} \
     -Doptimize=ReleaseFast \
     -Dcpu=baseline \
