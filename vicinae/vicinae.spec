@@ -36,6 +36,7 @@ BuildRequires:  pkgconfig(libcmark-gfm)
 BuildRequires:  pkgconfig(libqalculate)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(protobuf)
+BuildRequires:  pkgconfig(wayland-protocols)
 BuildRequires:  pkgconfig(xcb-keysyms)
 
 BuildRequires:  nodejs-npm
