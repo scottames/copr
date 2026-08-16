@@ -3,7 +3,7 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.24.0
+Version:        0.26.2
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
@@ -36,6 +36,7 @@ BuildRequires:  pkgconfig(libcmark-gfm)
 BuildRequires:  pkgconfig(libqalculate)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(protobuf)
+BuildRequires:  pkgconfig(wayland-protocols)
 BuildRequires:  pkgconfig(xcb-keysyms)
 
 BuildRequires:  nodejs-npm
