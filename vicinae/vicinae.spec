@@ -7,6 +7,7 @@ Version:        0.26.3
 Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
+ExclusiveArch:  x86_64 aarch64
 
 %forgemeta
 URL:            %{forgeurl}
