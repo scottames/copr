@@ -3,8 +3,8 @@
 
 Name:           vicinae
 Epoch:          1
-Version:        0.26.3
-Release:        3%{?dist}
+Version:        0.27.1
+Release:        1%{?dist}
 Summary:        A focused launcher for your desktop — native, fast, extensible
 License:        GPL-3.0
 ExclusiveArch:  x86_64 aarch64
@@ -90,6 +90,10 @@ sed -i '/^Terminal=False$/d' extra/vicinae.desktop
 sed -i 's/Terminal=False/Terminal=false/' extra/vicinae.desktop
 sed -i 's/^Categories=.*/Categories=Utility;/' extra/vicinae.desktop
 %cmake_install
+# numen is fetched and statically linked; do not ship its development artifacts.
+rm -rf %{buildroot}%{_includedir}/numen \
+    %{buildroot}%{_libdir}/cmake/numen \
+    %{buildroot}%{_libdir}/libnumen.a
 install -Dm644 extra/vicinae.service %{buildroot}%{_userunitdir}/vicinae.service
 
 

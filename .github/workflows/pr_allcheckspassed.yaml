@@ -20,5 +20,5 @@ jobs:
       - uses: wechuli/allcheckspassed@e4240aa9cc76fd6828ce27a71ad16c406c25adb3 # v2
         with:
           delay: '3' # default: 1
-          retries: '15' # default: 10
+          retries: '30' # poll for up to 30 minutes after the initial delay
           polling_interval: '1' # default
