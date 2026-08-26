@@ -88,7 +88,14 @@ jobs:
             fi
 
             SPEC_EXCLUSIVE_ARCHES="$(grep -Pom1 '^ExclusiveArch:\s*\K.*' "$COPR_SPEC_FILE" || true)"
-            SPEC_BUILD_ARCH="$(grep -Pom1 '^BuildArch:\s*\K[^[:space:]]+' "$COPR_SPEC_FILE" || true)"
+            SPEC_BUILD_ARCH="$(awk '
+              /^%package([[:space:]]|$)/ { exit }
+              /^BuildArch:[[:space:]]*/ {
+                sub(/^BuildArch:[[:space:]]*/, "")
+                print $1
+                exit
+              }
+            ' "$COPR_SPEC_FILE")"
             SPEC_IFARCH_ARCHES="$(grep -Po '^%ifarch\s+\K.*' "$COPR_SPEC_FILE" | tr ' ' '\n' | grep -E '^(x86_64|aarch64)$' | sort -u | xargs || true)"
 
             SPEC_ARCHES="x86_64"
