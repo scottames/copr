@@ -26,6 +26,8 @@ BuildRequires:  systemd-rpm-macros
 Requires:       alsa-lib
 Requires:       curl
 Requires:       glibc
+Requires:       gtk4
+Requires:       gtk4-layer-shell
 Requires:       pipewire-alsa
 
 %description
@@ -76,7 +78,13 @@ patchelf --remove-rpath %{buildroot}%{_prefix}/lib/voxtype/migraphx/libonnxrunti
 %check
 test -f payload/etc/voxtype/config.toml
 test -x payload/usr/bin/voxtype
+test -x payload/usr/bin/voxtype-audio-bridge
+test -L payload/usr/bin/voxtype-osd
 test -f payload/usr/lib/systemd/user/voxtype.service
+test -x payload/usr/lib/voxtype/voxtype-osd
+test -x payload/usr/lib/voxtype/voxtype-osd-gtk4
+test -x payload/usr/lib/voxtype/voxtype-osd-quickshell
+test -f payload/usr/share/voxtype/quickshell/shell.qml
 
 %post
 #!/bin/sh
@@ -129,24 +137,24 @@ if [ -n "$GPU_DETECTED" ]; then
     echo "GPU detected: $GPU_DETECTED"
     echo ""
     echo "  For GPU acceleration (faster inference), run:"
-    echo "    voxtype setup gpu --enable"
+    echo "    sudo voxtype setup gpu --enable"
     echo ""
-    echo "  Requires: vulkan-icd-loader and GPU drivers"
+    echo "  Requires: vulkan-loader and GPU drivers"
 fi
 
 echo ""
 echo "To complete setup:"
 echo ""
-echo "  1. Add your user to the 'input' group:"
-echo "     sudo usermod -aG input \$USER"
-echo ""
-echo "  2. Log out and back in for group changes to take effect"
-echo ""
-echo "  3. Download a model (Whisper or Parakeet):"
+echo "  1. Download a model (Whisper or Parakeet):"
 echo "     voxtype setup model"
 echo ""
-echo "  4. Start voxtype:"
+echo "  2. Start voxtype:"
 echo "     systemctl --user enable --now voxtype"
+echo ""
+echo "  Optional: For the built-in evdev hotkey, add your user to the"
+echo "  'input' group, then log out and back in. Compositor keybindings"
+echo "  do not require this access:"
+echo "     sudo usermod -aG input \$USER"
 echo ""
 echo "  Optional: Switch to Parakeet engine (faster, lower memory):"
 echo "     voxtype setup parakeet --enable"
@@ -160,6 +168,8 @@ echo ""
 %files
 %config(noreplace) %{_sysconfdir}/voxtype/config.toml
 %{_bindir}/voxtype
+%{_bindir}/voxtype-audio-bridge
+%{_bindir}/voxtype-osd
 %dir %{_prefix}/lib/.build-id
 %dir %{_prefix}/lib/.build-id/*
 %{_prefix}/lib/.build-id/*/*
@@ -186,6 +196,9 @@ echo ""
 %{_prefix}/lib/voxtype/voxtype-onnx-cuda-13
 %{_prefix}/lib/voxtype/voxtype-onnx-migraphx
 %{_prefix}/lib/voxtype/voxtype-onnx-rocm
+%{_prefix}/lib/voxtype/voxtype-osd
+%{_prefix}/lib/voxtype/voxtype-osd-gtk4
+%{_prefix}/lib/voxtype/voxtype-osd-quickshell
 %{_prefix}/lib/voxtype/voxtype-vulkan
 %{_datadir}/bash-completion/completions/voxtype
 %license %{_docdir}/voxtype/LICENSE
