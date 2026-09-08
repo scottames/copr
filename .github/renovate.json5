@@ -19,6 +19,13 @@
     },
   ],
   customDatasources: {
+    'monstar-source': {
+      defaultRegistryUrlTemplate: 'https://api.github.com/repos/rockorager/monstar/releases',
+      format: 'json',
+      transformTemplates: [
+        '($sourceName:=function($release){"monstar-" & $replace($release.tag_name,/^v/,"") & "-source.tar.gz"};$sourceAsset:=function($release){($filter($release.assets,function($asset){$asset.name=$sourceName($release) and $contains($asset.digest,/^sha256:[0-9a-f]{64}$/)}))[0]};{"releases":$append([],$map($filter($,function($release){$contains($release.tag_name,/^v/) and $not($release.draft) and $not($release.prerelease) and $exists($sourceAsset($release))}),function($release){($version:=$replace($release.tag_name,/^v/,"");$asset:=$sourceAsset($release);{"version":$version,"releaseTimestamp":$release.published_at,"changelogUrl":$release.html_url,"sourceUrl":$release.html_url,"digest":$replace($asset.digest,/^sha256:/,"")})})),"sourceUrl":"https://github.com/rockorager/monstar","homepage":"https://github.com/rockorager/monstar"})',
+      ],
+    },
     'voxtype-rpm': {
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/peteonrails/voxtype/releases',
       format: 'json',
@@ -211,6 +218,18 @@
       ],
       depNameTemplate: 'jdx/mise',
       datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^monstar/monstar\\.spec$/',
+      ],
+      matchStrings: [
+        '(?<checksumPrefix>%global\\s+upstream_source_sha256\\s+)(?<currentDigest>[0-9a-f]{64})(?<versionPrefix>\\n(?:.*\\n)*?Version:\\s*)(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'rockorager/monstar',
+      datasourceTemplate: 'custom.monstar-source',
+      versioningTemplate: 'semver',
     },
     {
       customType: 'regex',
