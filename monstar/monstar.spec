@@ -1,4 +1,5 @@
 %global upstream_source_sha256 a82209aaef3534407f29d860e3174974f19b4a7c10286212fdeacdcd1cb9049d
+%global debug_package %{nil}
 
 Name:           monstar
 Version:        1.0.1
@@ -8,6 +9,8 @@ Summary:        Linux-native Wayland terminal built on the Ghostty terminal core
 License:        MIT
 URL:            https://github.com/rockorager/monstar
 Source0:        https://github.com/rockorager/monstar/releases/download/v%{version}/monstar-%{version}-source.tar.gz
+# patch-guard: remove-after-version=1.0.1 reason=zig-lld-aarch64-glibc-symbols
+Patch0:         monstar-1.0.1-zig-linker-aarch64.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -37,14 +40,13 @@ if [ "%{upstream_source_sha256}" != "$actual_sum" ]; then
     exit 1
 fi
 
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # The release source archive does not vendor the Zig dependency tree.
 zig build --fetch=all
 zig build \
     --summary all \
-    --build-id=sha1 \
     -Doptimize=ReleaseFast \
     -Dcpu=baseline
 

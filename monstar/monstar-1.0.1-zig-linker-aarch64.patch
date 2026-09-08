@@ -1,0 +1,10 @@
+diff --git a/build.zig b/build.zig
+--- a/build.zig
++++ b/build.zig
+@@ -124,3 +124,6 @@
+         .use_llvm = true,
++        // Zig's bundled LLD cannot resolve Fedora's versioned glibc symbols
++        // on aarch64.
++        .use_lld = false,
+     });
+     root_module.addCSourceFile(.{ .file = b.path("vendor/stb_image_resize.c") });
