@@ -1,6 +1,6 @@
 Name:           hyprtoolkit
-Version:        0.5.4
-Release:        %autorelease -b2
+Version:        0.6.0
+Release:        %autorelease
 Summary:        A modern C++ Wayland-native GUI toolkit
 
 License:        BSD-3-Clause
@@ -15,6 +15,7 @@ BuildRequires:  cmake(hyprwayland-scanner)
 BuildRequires:  gcc-c++
 BuildRequires:  mesa-libEGL-devel
 BuildRequires:  ninja-build
+BuildRequires:  pkgconfig(absl_flat_hash_map)
 BuildRequires:  pkgconfig(aquamarine) >= 0.10.0
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gbm)
@@ -64,7 +65,7 @@ sed -i '/#include "ConfigManager.hpp"/a #include <climits>\n#include <unistd.h>'
 %license LICENSE
 %doc README.md
 %{_libdir}/lib%{name}.so.%{version}
-%{_libdir}/lib%{name}.so.5
+%{_libdir}/lib%{name}.so.6
 
 %files devel
 %{_includedir}/%{name}/
