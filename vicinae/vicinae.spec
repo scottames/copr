@@ -39,6 +39,7 @@ BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(wayland-protocols)
 BuildRequires:  pkgconfig(xcb-keysyms)
+BuildRequires:  pkgconfig(xkbcommon-x11)
 
 BuildRequires:  nodejs-npm
 BuildRequires:  minizip-compat-devel
