@@ -47,6 +47,11 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
+// OTel 1.47 introduces an import cycle with Dagger's pinned log API.
+// Keep core on the last compatible release until dagger/otel-go supports it.
+// https://github.com/dagger/dagger/issues/14462
+replace go.opentelemetry.io/otel => go.opentelemetry.io/otel v1.46.0
+
 replace go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc => go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.16.0
 
 replace go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp => go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp v0.16.0

@@ -5,6 +5,9 @@ on:
     paths:
       - "*/*.spec"
       - ".github/spec-build-targets.json"
+      - ".dagger/**"
+      - "dagger.json"
+      - ".github/workflows/pr_build-changed-spec-files.yaml"
 permissions:
   contents: read
   pull-requests: read
@@ -18,7 +21,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       # yamllint disable-line rule:line-length
-      has-changes: ${{ steps.changed-files.outputs.any_changed == 'true' || steps.changed-build-targets.outputs.any_changed == 'true' }}
+      has-changes: ${{ steps.changed-files.outputs.any_changed == 'true' || steps.changed-build-targets.outputs.any_changed == 'true' || steps.changed-build-tooling.outputs.any_changed == 'true' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -39,6 +42,15 @@ jobs:
         with:
           files: |
             .github/spec-build-targets.json
+      - name: changed build tooling
+        id: changed-build-tooling
+        # yamllint disable-line rule:line-length
+        uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad # v47
+        with:
+          files: |
+            .dagger/**
+            dagger.json
+            .github/workflows/pr_build-changed-spec-files.yaml
       - name: Set matrix output
         id: set-matrix
         # yamllint disable rule:line-length
@@ -47,11 +59,16 @@ jobs:
           fedora_versions=$(jq -r '.default_fedora_versions | join(" ")' <<< "$build_targets_json")
           spec_fedora_versions_json=$(jq -c '.spec_overrides' <<< "$build_targets_json")
           build_targets_changed='${{ steps.changed-build-targets.outputs.any_changed }}'
+          build_tooling_changed='${{ steps.changed-build-tooling.outputs.any_changed }}'
 
           if [ "$build_targets_changed" = "true" ]; then
             files=$(git ls-files '*/*.spec')
           else
             files='${{ steps.changed-files.outputs.all_changed_files }}'
+            if [ "$build_tooling_changed" = "true" ]; then
+              # Exercise the shared builder even when no spec changed.
+              files=$(printf '%s\n' $files mise/mise.spec | sort -u)
+            fi
           fi
           include_array='[]'
 
@@ -97,7 +114,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         with:
-          version: "latest"
+          version: "0.21.10"
           verb: call
           # yamllint disable-line rule:line-length
           args: build-spec-file --spec-file "${{ matrix.spec-file }}" --fedora-version "${{ matrix.fedora-version }}"
