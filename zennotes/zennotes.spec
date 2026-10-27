@@ -1,10 +1,10 @@
 %global upstream_rpm ZenNotes-%{version}-linux-x86_64.rpm
-%global upstream_rpm_sha256 45a8cf5b2f6d758cbecfa8a6f129297cdd88541aa31f8d8a201be7718b47ca05
+%global upstream_rpm_sha256 ae8dc992a06d406588fc81391fde5bf2a9c187022a3d4a27f175764eb9869a34
 %global app_dir %{_libdir}/%{name}
 %global debug_package %{nil}
 
 Name:           zennotes
-Version:        2.76.0
+Version:        2.77.0
 Release:        1%{?dist}
 Summary:        Markdown notes app with local-first vaults
 
