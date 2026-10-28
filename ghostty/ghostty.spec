@@ -129,7 +129,9 @@ DESTDIR=%{buildroot} zig build \
 %{_prefix}/include/ghostty/vt.h
 %{_prefix}/include/ghostty/vt/
 %{_prefix}/lib/libghostty-vt.so
+%{_prefix}/lib/libghostty-vt.a
 %{_prefix}/share/pkgconfig/libghostty-vt.pc
+%{_prefix}/share/pkgconfig/libghostty-vt-static.pc
 
 %changelog
 %autochangelog
