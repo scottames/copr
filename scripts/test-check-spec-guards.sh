@@ -172,20 +172,12 @@ run_case \
     128 \
     'base_spec 1.0.0 "%autorelease"; git add pkg/example.spec; git -c core.hooksPath=/dev/null -c user.name=test -c user.email=test@example.invalid commit -m base >/dev/null; export SPEC_GUARDS_BASE_REF=missing-base-ref'
 
-repo_default_versions=$(jq -r '.default_fedora_versions[]' .github/spec-build-targets.json)
-if grep -qx '42' <<< "$repo_default_versions"; then
-    printf 'not ok - repository default Fedora targets exclude EOL Fedora 42\n'
-    failures=$((failures + 1))
+repo_default_versions=$(jq -c '.default_fedora_versions' .github/spec-build-targets.json)
+if [ "$repo_default_versions" = '["44","45"]' ]; then
+    printf 'ok - repository default Fedora targets are 44 and 45\n'
 else
-    printf 'ok - repository default Fedora targets exclude EOL Fedora 42\n'
-fi
-
-repo_max_default_version=$(jq -r '.default_fedora_versions | map(tonumber) | max | tostring' .github/spec-build-targets.json)
-if [ "$repo_max_default_version" = 44 ]; then
-    printf 'ok - repository max default Fedora target is 44\n'
-else
-    printf 'not ok - repository max default Fedora target is 44\n'
-    printf 'expected max default target 44, got %s\n' "$repo_max_default_version"
+    printf 'not ok - repository default Fedora targets are 44 and 45\n'
+    printf 'expected default targets ["44","45"], got %s\n' "$repo_default_versions"
     failures=$((failures + 1))
 fi
 
