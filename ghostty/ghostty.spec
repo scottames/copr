@@ -6,13 +6,12 @@ Summary:        Fast, feature-rich, and cross-platform terminal emulator that us
 
 License:        MIT
 URL:            https://github.com/ghostty-org/ghostty
-Source0:        https://github.com/ghostty-org/ghostty/archive/refs/tags/v%{version}.tar.gz
+Source0:        https://release.files.ghostty.org/%{version}/ghostty-%{version}.tar.gz
 
 
 ExclusiveArch: x86_64 aarch64
 
 
-BuildRequires: blueprint-compiler
 BuildRequires: bzip2-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freetype-devel
@@ -26,6 +25,7 @@ BuildRequires: oniguruma-devel
 BuildRequires: pandoc-cli
 BuildRequires: pixman-devel
 BuildRequires: pkg-config
+BuildRequires: pkgconfig(egl)
 BuildRequires: wayland-protocols-devel
 BuildRequires: zig017 = 0.17.0
 BuildRequires: zlib-ng-devel
