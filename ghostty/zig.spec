@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
-Name:           zig015
-Version:        0.15.2
+Name:           zig017
+Version:        0.17.0
 Release:        %autorelease
 Summary:        General-purpose programming language and toolchain
 
@@ -12,11 +12,11 @@ Source1:        https://ziglang.org/download/%{version}/zig-aarch64-linux-%{vers
 
 %ifarch x86_64
 %global upstream_source %{SOURCE0}
-%global upstream_sha256 02aa270f183da276e5b5920b1dac44a63f1a49e55050ebde3aecc9eb82f93239
+%global upstream_sha256 1cbe9df9f27e6b78d14ccbca43b6703a404ef79ef1c463de901d7f088d4e2026
 %endif
 %ifarch aarch64
 %global upstream_source %{SOURCE1}
-%global upstream_sha256 958ed7d1e00d0ea76590d27666efbf7a932281b3d7ba0c6b01b0ff26498f667f
+%global upstream_sha256 9e8d11661d4ae3bd57702a3832781e23ad151dde5798e16a5ccd503f65234ff8
 %endif
 
 ExclusiveArch:  x86_64 aarch64
@@ -28,7 +28,7 @@ Zig is a general-purpose programming language and toolchain for maintaining
 robust, optimal, and reusable software.
 
 This package repackages the official upstream prebuilt compiler so Ghostty can
-be built with Zig %{version}, rather than Fedora's newer Zig release.
+be built with Zig %{version}, independently of Fedora's default Zig release.
 
 %prep
 %setup -q -c -T -n zig-%{version}
