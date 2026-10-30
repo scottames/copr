@@ -5,7 +5,7 @@
 
 Name:           zennotes
 Version:        2.79.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Markdown notes app with local-first vaults
 
 License:        MIT
@@ -61,7 +61,8 @@ fi
 test "$(rpm -qp --qf '%%{NAME}' %{SOURCE0})" = "ZenNotes"
 test "$(rpm -qp --qf '%%{VERSION}' %{SOURCE0})" = "%{version}"
 test "$(rpm -qp --qf '%%{ARCH}' %{SOURCE0})" = "x86_64"
-rpmkeys --checksig %{SOURCE0}
+# Upstream RPM is unsigned; its pinned SHA-256 is checked above.
+rpmkeys --define '_pkgverify_level digest' --checksig %{SOURCE0}
 
 unexpected_rpm_entry="$(rpm -qp --qf '[%%{FILEMODES:octal}\t%%{FILENAMES}\n]' %{SOURCE0} | awk '
     $1 ~ /^10[0-7]{4}$/ || $1 ~ /^4[0-7]{4}$/ { next }
