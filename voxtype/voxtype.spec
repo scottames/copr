@@ -1,10 +1,10 @@
 %global upstream_release 1
 %global upstream_rpm %{name}-%{version}-%{upstream_release}.x86_64.rpm
-%global upstream_rpm_sha256 be103de733f376030180ac734bb845779bf6ee963419a8e72518b5df150525bf
+%global upstream_rpm_sha256 5d0704d2f8bff4b02ca7d6ace1eab20caf8b3bbbc137f3e1a268af5021509872
 %global debug_package %{nil}
 
 Name:           voxtype
-Version:        1.0.1
+Version:        1.1.1
 Release:        1%{?dist}
 Summary:        Push-to-talk voice-to-text for Linux
 
@@ -81,6 +81,7 @@ test -x payload/usr/bin/voxtype
 test -x payload/usr/bin/voxtype-audio-bridge
 test -L payload/usr/bin/voxtype-osd
 test -f payload/usr/lib/systemd/user/voxtype.service
+test -x payload/usr/lib/voxtype/voxtype-baseline
 test -x payload/usr/lib/voxtype/voxtype-osd
 test -x payload/usr/lib/voxtype/voxtype-osd-gtk4
 test -x payload/usr/lib/voxtype/voxtype-osd-quickshell
@@ -190,6 +191,7 @@ echo ""
 %{_prefix}/lib/voxtype/migraphx/voxtype-onnx-migraphx
 %{_prefix}/lib/voxtype/voxtype-avx2
 %{_prefix}/lib/voxtype/voxtype-avx512
+%{_prefix}/lib/voxtype/voxtype-baseline
 %{_prefix}/lib/voxtype/voxtype-onnx-avx2
 %{_prefix}/lib/voxtype/voxtype-onnx-avx512
 %{_prefix}/lib/voxtype/voxtype-onnx-cuda-12
