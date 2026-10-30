@@ -1,5 +1,5 @@
 Name:           hyprland-protocols
-Version:        0.7.0
+Version:        0.8.0
 Release:        %autorelease
 Summary:        Wayland protocol extensions for Hyprland
 BuildArch:      noarch
@@ -8,7 +8,8 @@ License:        BSD-3-Clause
 URL:            https://github.com/hyprwm/hyprland-protocols
 Source:         %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires:  meson
+BuildRequires:  cmake
+BuildRequires:  gcc
 
 %description
 %{summary}.
@@ -25,12 +26,12 @@ Summary:        Wayland protocol extensions for Hyprland
 
 
 %build
-%meson
-%meson_build
+%cmake
+%cmake_build
 
 
 %install
-%meson_install
+%cmake_install
 
 
 %files devel
