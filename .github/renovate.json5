@@ -15,7 +15,7 @@
       matchDatasources: ['docker'],
       matchFileNames: ['.github/workflows/spec-guards.yaml'],
       matchPackageNames: ['fedora'],
-      allowedVersions: '/^44$/',
+      allowedVersions: '/^45$/',
     },
   ],
   customDatasources: {

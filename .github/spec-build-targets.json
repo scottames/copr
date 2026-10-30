@@ -1,4 +1,4 @@
 {
-  "default_fedora_versions": ["43", "44"],
+  "default_fedora_versions": ["44", "45"],
   "spec_overrides": {}
 }
