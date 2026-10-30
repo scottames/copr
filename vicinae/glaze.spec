@@ -2,16 +2,13 @@
 
 Name:           glaze
 Version:        9.1.0
-Release:        %autorelease -b2
+Release:        %autorelease
 Summary:        Extremely fast, in memory, JSON and interface library for modern C++
 License:        MIT
 
 %forgemeta
 URL:            %{forgeurl}
 Source0:        %{forgesource}
-# Backport https://github.com/stephenberry/glaze/pull/2977 for Qt consumers.
-# patch-guard: remove-after-version=9.0.0 reason=qt-emit-macro-collision
-Patch0:         glaze-9.0.0-qt-emit-macro.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
