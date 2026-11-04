@@ -1,7 +1,7 @@
 [tools]
 "aqua:dagger/dagger" = "0.21.11"
 "aqua:int128/ghcp" = "1.15.3"
-"pipx:copr-cli" = "2.6"
+"pipx:copr-cli" = "2.8"
 
 [tasks.build]
 description = "Build a single spec file"
