@@ -41,14 +41,14 @@
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hex/releases',
       format: 'json',
       transformTemplates: [
-        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-x64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){{"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")}}))})',
+        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-x64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
       ],
     },
     'hex-rpm-arm64': {
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hex/releases',
       format: 'json',
       transformTemplates: [
-        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-arm64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){{"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")}}))})',
+        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-arm64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
       ],
     },
     'zennotes-rpm': {
