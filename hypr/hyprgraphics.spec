@@ -1,6 +1,6 @@
 Name:           hyprgraphics
 Version:        0.6.0
-Release:        %autorelease -b12
+Release:        %autorelease
 Summary:        Hyprland graphics / resource utilities
 
 License:        BSD-3-Clause
@@ -58,7 +58,7 @@ Development files for %{name}.
 %files
 %license LICENSE
 %doc README.md
-%{_libdir}/lib%{name}.so.4
+%{_libdir}/lib%{name}.so.5
 %{_libdir}/lib%{name}.so.%{version}
 
 %files devel
