@@ -10,6 +10,12 @@
   automerge: true,
   packageRules: [
     {
+      matchPackageNames: ['herdrdev/herdr-app', 'herdrdev/herdr-core'],
+      groupName: 'Herdr RPMs',
+      // Review app/core compatibility and updater behavior before publishing.
+      automerge: false,
+    },
+    {
       matchPackageNames: ['anomalyco/hokum'],
       groupName: 'hokum RPMs',
     },
@@ -27,6 +33,34 @@
     },
   ],
   customDatasources: {
+    'herdr-app-x86_64': {
+      defaultRegistryUrlTemplate: 'https://releases.herdr.dev/app/latest.json',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-x86_64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-x86_64".sha256}] : []}',
+      ],
+    },
+    'herdr-app-aarch64': {
+      defaultRegistryUrlTemplate: 'https://releases.herdr.dev/app/latest.json',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-aarch64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-aarch64".sha256}] : []}',
+      ],
+    },
+    'herdr-core-x86_64': {
+      defaultRegistryUrlTemplate: 'https://releases.herdr.dev/core/latest.json',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-x86_64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-x86_64".sha256}] : []}',
+      ],
+    },
+    'herdr-core-aarch64': {
+      defaultRegistryUrlTemplate: 'https://releases.herdr.dev/core/latest.json',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-aarch64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-aarch64".sha256}] : []}',
+      ],
+    },
     'hokum-rpm-x64': {
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hokum/releases',
       format: 'json',
@@ -78,6 +112,26 @@
     },
   },
   customManagers: [
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/^herdrdev/herdr-app\\.spec$/'],
+      matchStrings: [
+        '%global upstream_arch (?<depType>x86_64|aarch64)\\n%global upstream_sha256 (?<currentDigest>[0-9a-f]{64})\\nVersion:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'herdrdev/herdr-app',
+      datasourceTemplate: 'custom.herdr-app-{{{depType}}}',
+      versioningTemplate: 'semver',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/^herdrdev/herdr-core\\.spec$/'],
+      matchStrings: [
+        '%global upstream_arch (?<depType>x86_64|aarch64)\\n%global upstream_sha256 (?<currentDigest>[0-9a-f]{64})\\nVersion:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'herdrdev/herdr-core',
+      datasourceTemplate: 'custom.herdr-core-{{{depType}}}',
+      versioningTemplate: 'semver',
+    },
     {
       customType: 'regex',
       managerFilePatterns: ['/^anomalyco/hokum\\.spec$/'],
