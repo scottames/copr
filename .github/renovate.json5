@@ -21,6 +21,10 @@
       matchPackageNames: ['fedora'],
       allowedVersions: '/^45$/',
     },
+    {
+      matchPackageNames: ['anomalyco/hex'],
+      groupName: 'hex RPMs',
+    },
   ],
   customDatasources: {
     'hokum-rpm-x64': {
@@ -49,6 +53,20 @@
       format: 'json',
       transformTemplates: [
         '($rpmName:=function($release){"voxtype-" & $replace($release.tag_name,/^v/,"") & "-1.x86_64.rpm"};$rpmAsset:=function($release){($filter($release.assets,function($asset){$asset.name=$rpmName($release) and $contains($asset.digest,/^sha256:[0-9a-f]{64}$/)}))[0]};{"releases":$map($filter($,function($release){$exists($rpmAsset($release))}),function($release){($version:=$replace($release.tag_name,/^v/,"");$asset:=$rpmAsset($release);{"version":$version,"releaseTimestamp":$release.published_at,"changelogUrl":$release.html_url,"sourceUrl":$release.html_url,"digest":$replace($asset.digest,/^sha256:/,"")})}),"sourceUrl":"https://github.com/peteonrails/voxtype","homepage":"https://voxtype.io"})',
+      ],
+    },
+    'hex-rpm-x64': {
+      defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hex/releases',
+      format: 'json',
+      transformTemplates: [
+        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-x64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
+      ],
+    },
+    'hex-rpm-arm64': {
+      defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hex/releases',
+      format: 'json',
+      transformTemplates: [
+        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-arm64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
       ],
     },
     'zennotes-rpm': {
@@ -314,6 +332,16 @@
       ],
       depNameTemplate: 'ZenNotes/zennotes',
       datasourceTemplate: 'custom.zennotes-rpm',
+      versioningTemplate: 'semver',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/^anomalyco/hex\\.spec$/'],
+      matchStrings: [
+        '%global upstream_arch (?<depType>x64|arm64)\\n%global upstream_rpm_sha256 (?<currentDigest>[0-9a-f]{64})\\nVersion:\\s*(?<currentValue>\\S+)',
+      ],
+      depNameTemplate: 'anomalyco/hex',
+      datasourceTemplate: 'custom.hex-rpm-{{{depType}}}',
       versioningTemplate: 'semver',
     },
     {
