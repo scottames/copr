@@ -12,8 +12,6 @@
     {
       matchPackageNames: ['herdrdev/herdr-app', 'herdrdev/herdr-core'],
       groupName: 'Herdr RPMs',
-      // Review app/core compatibility and updater behavior before publishing.
-      automerge: false,
     },
     {
       matchPackageNames: ['anomalyco/hokum'],
@@ -37,42 +35,42 @@
       defaultRegistryUrlTemplate: 'https://releases.herdr.dev/app/latest.json',
       format: 'json',
       transformTemplates: [
-        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-x86_64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-x86_64".sha256}] : []}',
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-x86_64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version & "+" & targets."linux-x86_64".sha256,"changelogContent":notes,"changelogUrl":"https://github.com/herdrdev/herdr-app/blob/v" & version & "/CHANGELOG.md"}] : [],"sourceUrl":"https://github.com/herdrdev/herdr-app"}',
       ],
     },
     'herdr-app-aarch64': {
       defaultRegistryUrlTemplate: 'https://releases.herdr.dev/app/latest.json',
       format: 'json',
       transformTemplates: [
-        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-aarch64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-aarch64".sha256}] : []}',
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-aarch64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version & "+" & targets."linux-aarch64".sha256,"changelogContent":notes,"changelogUrl":"https://github.com/herdrdev/herdr-app/blob/v" & version & "/CHANGELOG.md"}] : [],"sourceUrl":"https://github.com/herdrdev/herdr-app"}',
       ],
     },
     'herdr-core-x86_64': {
       defaultRegistryUrlTemplate: 'https://releases.herdr.dev/core/latest.json',
       format: 'json',
       transformTemplates: [
-        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-x86_64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-x86_64".sha256}] : []}',
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-x86_64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version & "+" & targets."linux-x86_64".sha256,"changelogContent":notes,"changelogUrl":"https://github.com/herdrdev/herdr-core/blob/v" & version & "/CHANGELOG.md"}] : [],"sourceUrl":"https://github.com/herdrdev/herdr-core"}',
       ],
     },
     'herdr-core-aarch64': {
       defaultRegistryUrlTemplate: 'https://releases.herdr.dev/core/latest.json',
       format: 'json',
       transformTemplates: [
-        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-aarch64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version,"digest":targets."linux-aarch64".sha256}] : []}',
+        '{"releases":$contains($string(version),/^[0-9]+[.][0-9]+[.][0-9]+$/) and $contains($string(targets."linux-aarch64".sha256),/^[0-9a-f]{64}$/) ? [{"version":version & "+" & targets."linux-aarch64".sha256,"changelogContent":notes,"changelogUrl":"https://github.com/herdrdev/herdr-core/blob/v" & version & "/CHANGELOG.md"}] : [],"sourceUrl":"https://github.com/herdrdev/herdr-core"}',
       ],
     },
     'hokum-rpm-x64': {
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hokum/releases',
       format: 'json',
       transformTemplates: [
-        '($asset:=function($r){($r.assets[name="hokum-" & $replace($r.tag_name,/^v/,"") & "-linux-x64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
+        '($asset:=function($r){($r.assets[name="hokum-" & $replace($r.tag_name,/^v/,"") & "-linux-x64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){($a:=$asset($r);{"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"changelogContent":$r.body,"digest":$replace($a.digest,/^sha256:/,"")})})),"sourceUrl":"https://github.com/anomalyco/hokum"})',
       ],
     },
     'hokum-rpm-arm64': {
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hokum/releases',
       format: 'json',
       transformTemplates: [
-        '($asset:=function($r){($r.assets[name="hokum-" & $replace($r.tag_name,/^v/,"") & "-linux-arm64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
+        '($asset:=function($r){($r.assets[name="hokum-" & $replace($r.tag_name,/^v/,"") & "-linux-arm64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){($a:=$asset($r);{"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"changelogContent":$r.body,"digest":$replace($a.digest,/^sha256:/,"")})})),"sourceUrl":"https://github.com/anomalyco/hokum"})',
       ],
     },
     'monstar-source': {
@@ -93,14 +91,14 @@
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hex/releases',
       format: 'json',
       transformTemplates: [
-        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-x64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
+        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-x64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){($a:=$asset($r);{"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"changelogContent":$r.body,"digest":$replace($a.digest,/^sha256:/,"")})})),"sourceUrl":"https://github.com/anomalyco/hex"})',
       ],
     },
     'hex-rpm-arm64': {
       defaultRegistryUrlTemplate: 'https://api.github.com/repos/anomalyco/hex/releases',
       format: 'json',
       transformTemplates: [
-        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-arm64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){({"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"digest":$replace($asset($r).digest,/^sha256:/,"")})}))})',
+        '($asset:=function($r){($r.assets[name="hex-" & $replace($r.tag_name,/^v/,"") & "-linux-arm64.rpm" and $contains($string(digest),/^sha256:[0-9a-f]{64}$/)])[0]};{"releases":$append([],$map($filter($,function($r){$contains($r.tag_name,/^v/) and $not($r.draft) and $not($r.prerelease) and $exists($asset($r))}),function($r){($a:=$asset($r);{"version":$replace($r.tag_name,/^v/,""),"releaseTimestamp":$r.published_at,"changelogUrl":$r.html_url,"changelogContent":$r.body,"digest":$replace($a.digest,/^sha256:/,"")})})),"sourceUrl":"https://github.com/anomalyco/hex"})',
       ],
     },
     'zennotes-rpm': {
@@ -112,12 +110,16 @@
     },
   },
   customManagers: [
+    // latest.json has no old digests. Track version+sha256 as one SemVer value,
+    // then write its parts together. Build metadata does not affect version order.
     {
       customType: 'regex',
       managerFilePatterns: ['/^herdrdev/herdr-app\\.spec$/'],
       matchStrings: [
-        '%global upstream_arch (?<depType>x86_64|aarch64)\\n%global upstream_sha256 (?<currentDigest>[0-9a-f]{64})\\nVersion:\\s*(?<currentValue>\\S+)',
+        '%global upstream_arch (?<depType>x86_64|aarch64)\\n%global upstream_sha256 (?<checksum>[0-9a-f]{64})\\nVersion:\\s*(?<currentValue>\\S+)',
       ],
+      currentValueTemplate: '{{{currentValue}}}+{{{checksum}}}',
+      autoReplaceStringTemplate: '%global upstream_arch {{{depType}}}\n%global upstream_sha256 {{{replace "^.*\\+" "" newValue}}}\nVersion:        {{{replace "\\+.*$" "" newValue}}}',
       depNameTemplate: 'herdrdev/herdr-app',
       datasourceTemplate: 'custom.herdr-app-{{{depType}}}',
       versioningTemplate: 'semver',
@@ -126,8 +128,10 @@
       customType: 'regex',
       managerFilePatterns: ['/^herdrdev/herdr-core\\.spec$/'],
       matchStrings: [
-        '%global upstream_arch (?<depType>x86_64|aarch64)\\n%global upstream_sha256 (?<currentDigest>[0-9a-f]{64})\\nVersion:\\s*(?<currentValue>\\S+)',
+        '%global upstream_arch (?<depType>x86_64|aarch64)\\n%global upstream_sha256 (?<checksum>[0-9a-f]{64})\\nVersion:\\s*(?<currentValue>\\S+)',
       ],
+      currentValueTemplate: '{{{currentValue}}}+{{{checksum}}}',
+      autoReplaceStringTemplate: '%global upstream_arch {{{depType}}}\n%global upstream_sha256 {{{replace "^.*\\+" "" newValue}}}\nVersion:        {{{replace "\\+.*$" "" newValue}}}',
       depNameTemplate: 'herdrdev/herdr-core',
       datasourceTemplate: 'custom.herdr-core-{{{depType}}}',
       versioningTemplate: 'semver',

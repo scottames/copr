@@ -59,9 +59,32 @@ assert_grep "datasourceTemplate: 'custom\.voxtype-rpm'" \
 assert_grep 'currentDigest' \
     .github/renovate.json5 \
     'renovate captures the current RPM sha256 digest'
-assert_no_grep 'autoReplaceStringTemplate' \
-    .github/renovate.json5 \
-    'renovate lets default autoreplace update version and RPM sha256 together'
+if awk '
+    /^    \{/ {
+        block = $0 ORS
+        in_block = 1
+        is_voxtype = 0
+        next
+    }
+    in_block {
+        block = block $0 ORS
+        if (index($0, "peteonrails/voxtype") > 0) {
+            is_voxtype = 1
+        }
+        if ($0 ~ /^    \},/) {
+            if (is_voxtype && block ~ /autoReplaceStringTemplate/) {
+                found = 1
+            }
+            in_block = 0
+            block = ""
+        }
+    }
+    END { exit found ? 0 : 1 }
+' .github/renovate.json5; then
+    fail 'renovate lets default autoreplace update version and RPM sha256 together'
+else
+    pass 'renovate lets default autoreplace update version and RPM sha256 together'
+fi
 assert_grep 'rpmName:=function.*-1\.x86_64\.rpm' \
     .github/renovate.json5 \
     'renovate filters releases to the matching RPM asset'

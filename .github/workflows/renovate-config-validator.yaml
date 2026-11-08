@@ -7,11 +7,21 @@ on:
     paths:
       - .github/renovate.json5
       - .github/workflows/renovate-config-validator.yaml
+      - scripts/test-renovate-custom-datasources.mjs
+      - anomalyco/hex.spec
+      - anomalyco/hokum.spec
+      - herdrdev/herdr-app.spec
+      - herdrdev/herdr-core.spec
   push:
     branches:
       - main
     paths:
       - .github/renovate.json5
+      - scripts/test-renovate-custom-datasources.mjs
+      - anomalyco/hex.spec
+      - anomalyco/hokum.spec
+      - herdrdev/herdr-app.spec
+      - herdrdev/herdr-core.spec
   workflow_dispatch:
 permissions:
   contents: read
@@ -34,3 +44,10 @@ jobs:
       - uses: suzuki-shunsuke/github-action-renovate-config-validator@1e1604219a6b38ae9a10aff42a28a3656322c31a # v2.4.1
         with:
           config_file_path: ${{ matrix.config }}
+      - name: Test custom datasources and spec updates with Renovate
+        run: |
+          # Resolve Renovate inside npx's PATH, not the runner's PATH.
+          # shellcheck disable=SC2016
+          npx --yes --package=renovate -c '
+            node scripts/test-renovate-custom-datasources.mjs "$(dirname "$(command -v renovate)")/../renovate"
+          '
