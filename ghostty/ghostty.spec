@@ -1,6 +1,6 @@
 Name:           ghostty
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration
 
 
@@ -81,6 +81,24 @@ DESTDIR=%{buildroot} zig build \
 %if 0%{?fedora} >= 42
     rm -f "%{buildroot}%{_prefix}/share/terminfo/g/ghostty"
 %endif
+
+# Ghostty 1.4.0 records DESTDIR in the pkg-config prefix. Review on update:
+# https://github.com/ghostty-org/ghostty/commit/7b06c054155d26f789d79a6e3ee0dc4b6e76f924
+sed -i 's|^prefix=.*|prefix=%{_prefix}|' \
+    "%{buildroot}%{_prefix}/share/pkgconfig/libghostty-vt.pc" \
+    "%{buildroot}%{_prefix}/share/pkgconfig/libghostty-vt-static.pc"
+
+%check
+for module in libghostty-vt libghostty-vt-static; do
+    pc="%{buildroot}%{_prefix}/share/pkgconfig/${module}.pc"
+    grep -qxF 'prefix=%{_prefix}' "$pc"
+    if grep -nF '%{buildroot}' "$pc"; then
+        echo "ERROR: ${module}.pc contains the RPM build root" >&2
+        exit 1
+    fi
+    PKG_CONFIG_LIBDIR="%{buildroot}%{_prefix}/share/pkgconfig" \
+        pkg-config --validate "$module"
+done
 
 %files
 %license LICENSE
