@@ -1,0 +1,13 @@
+diff --git a/build.zig b/build.zig
+--- a/build.zig
++++ b/build.zig
+@@ -191,6 +191,9 @@
+         // uucode's generated tables crash the x86_64 self-hosted backend.
+         // Ghostty uses LLVM for the same reason.
+         .use_llvm = true,
++        // Zig's bundled LLD cannot resolve Fedora's versioned glibc symbols
++        // referenced by libxkbcommon on aarch64. Disable LLD there.
++        .use_lld = if (target.result.cpu.arch == .aarch64) false else null,
+     });
+     // C dependencies such as Ghostty's Wuffs build as one section per file
+     // otherwise, so the linker kept their unused decoders.
