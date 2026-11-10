@@ -9,8 +9,6 @@ Summary:        Linux-native Wayland terminal built on the Ghostty terminal core
 License:        MIT
 URL:            https://github.com/rockorager/monstar
 Source0:        https://github.com/rockorager/monstar/releases/download/v%{version}/monstar-%{version}-source.tar.gz
-# patch-guard: remove-after-version=1.0.1 reason=zig-lld-aarch64-glibc-symbols
-Patch0:         monstar-1.0.1-zig-linker-aarch64.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -22,9 +20,10 @@ BuildRequires:  harfbuzz-devel
 BuildRequires:  libxkbcommon-devel
 BuildRequires:  ncurses
 BuildRequires:  pkg-config
+BuildRequires:  vulkan-headers
 BuildRequires:  wayland-devel >= 1.25
 BuildRequires:  wayland-protocols-devel >= 1.49
-BuildRequires:  zig >= 0.16.0
+BuildRequires:  zig017 = 0.17.0
 
 %description
 Monstar is a terminal emulator for Linux and Wayland built on the Ghostty
@@ -64,6 +63,8 @@ test "$(%{buildroot}%{_bindir}/monstar --version)" = "monstar %{version}"
 %{_datadir}/applications/dev.rockorager.monstar.desktop
 %{_datadir}/icons/hicolor/scalable/apps/dev.rockorager.monstar.svg
 %{_datadir}/monstar/
+%{_datadir}/terminfo/m/monstar
+%doc %{_docdir}/monstar/examples/
 %{_mandir}/man1/monstar.1*
 %{_mandir}/man5/monstar.5*
 
