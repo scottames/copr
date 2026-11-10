@@ -1,8 +1,8 @@
-%global upstream_source_sha256 9dbda03b5c63b02d3fc0f2d76c0e73505ba985a494f801b857e7e2772e46bfbe
+%global upstream_source_sha256 d3b8775a91bf04e31164089a7799b52ceb87c9dd16e80c68f05c19f8b0f99af5
 %global debug_package %{nil}
 
 Name:           monstar
-Version:        1.1.0
+Version:        1.1.1
 Release:        %autorelease
 Summary:        Linux-native Wayland terminal built on the Ghostty terminal core
 
