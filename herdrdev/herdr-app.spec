@@ -5,13 +5,13 @@ Name:           herdr-app
 # Keep each architecture's version and checksum together for Renovate.
 %ifarch x86_64
 %global upstream_arch x86_64
-%global upstream_sha256 475a383f8f439e3191a86635b5c1286ce4dfd2d9fcdf1e7cbdfdd6c7176f8ff3
-Version:        0.1.14
+%global upstream_sha256 f99e1e04be82c0e10b2f69ee7403ca34386f480d92511df5865af4703e7655dd
+Version:        0.1.15
 %endif
 %ifarch aarch64
 %global upstream_arch aarch64
-%global upstream_sha256 30a431ce95c17356efe8afed50c4eaf8888d83ef45acd9aa911094d51707d007
-Version:        0.1.14
+%global upstream_sha256 0e5fd95a056452ec31e32fe6aa5a47a8b1d42020ae8f3a10cda2e0a1001d4124
+Version:        0.1.15
 %endif
 Release:        1%{?dist}
 Summary:        Desktop app for persistent terminals and coding agents
