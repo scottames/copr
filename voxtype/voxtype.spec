@@ -29,6 +29,7 @@ Requires:       glibc
 Requires:       gtk4
 Requires:       gtk4-layer-shell
 Requires:       pipewire-alsa
+Requires:       vulkan-loader
 
 %description
 Voxtype is a push-to-talk voice-to-text tool for Linux.
@@ -170,28 +171,38 @@ echo ""
 %config(noreplace) %{_sysconfdir}/voxtype/config.toml
 %{_bindir}/voxtype
 %{_bindir}/voxtype-audio-bridge
+%{_bindir}/voxtype-configure-launcher
 %{_bindir}/voxtype-osd
-%dir %{_prefix}/lib/.build-id
-%dir %{_prefix}/lib/.build-id/*
-%{_prefix}/lib/.build-id/*/*
 %{_userunitdir}/voxtype.service
 %dir %{_prefix}/lib/voxtype
 %dir %{_prefix}/lib/voxtype/cuda-12
 %{_prefix}/lib/voxtype/cuda-12/libonnxruntime_providers_cuda.so
 %{_prefix}/lib/voxtype/cuda-12/libonnxruntime_providers_shared.so
+%{_prefix}/lib/voxtype/cuda-12/voxtype-gguf-worker
+%{_prefix}/lib/voxtype/cuda-12/voxtype-gguf-worker-onnx-cuda-12
 %{_prefix}/lib/voxtype/cuda-12/voxtype-onnx-cuda-12
 %dir %{_prefix}/lib/voxtype/cuda-13
 %{_prefix}/lib/voxtype/cuda-13/libonnxruntime.so*
 %{_prefix}/lib/voxtype/cuda-13/libonnxruntime_providers_cuda.so
 %{_prefix}/lib/voxtype/cuda-13/libonnxruntime_providers_shared.so
+%{_prefix}/lib/voxtype/cuda-13/voxtype-gguf-worker
+%{_prefix}/lib/voxtype/cuda-13/voxtype-gguf-worker-onnx-cuda-13
 %{_prefix}/lib/voxtype/cuda-13/voxtype-onnx-cuda-13
 %dir %{_prefix}/lib/voxtype/migraphx
 %{_prefix}/lib/voxtype/migraphx/libonnxruntime_providers_migraphx.so
 %{_prefix}/lib/voxtype/migraphx/libonnxruntime_providers_shared.so
+%{_prefix}/lib/voxtype/migraphx/voxtype-gguf-worker
+%{_prefix}/lib/voxtype/migraphx/voxtype-gguf-worker-onnx-migraphx
 %{_prefix}/lib/voxtype/migraphx/voxtype-onnx-migraphx
 %{_prefix}/lib/voxtype/voxtype-avx2
 %{_prefix}/lib/voxtype/voxtype-avx512
 %{_prefix}/lib/voxtype/voxtype-baseline
+%{_prefix}/lib/voxtype/voxtype-gguf-worker
+%{_prefix}/lib/voxtype/voxtype-gguf-worker-avx2
+%{_prefix}/lib/voxtype/voxtype-gguf-worker-avx512
+%{_prefix}/lib/voxtype/voxtype-gguf-worker-onnx-avx2
+%{_prefix}/lib/voxtype/voxtype-gguf-worker-onnx-avx512
+%{_prefix}/lib/voxtype/voxtype-gguf-worker-vulkan
 %{_prefix}/lib/voxtype/voxtype-onnx-avx2
 %{_prefix}/lib/voxtype/voxtype-onnx-avx512
 %{_prefix}/lib/voxtype/voxtype-onnx-cuda-12
@@ -202,10 +213,13 @@ echo ""
 %{_prefix}/lib/voxtype/voxtype-osd-gtk4
 %{_prefix}/lib/voxtype/voxtype-osd-quickshell
 %{_prefix}/lib/voxtype/voxtype-vulkan
+%{_datadir}/applications/voxtype-configure.desktop
 %{_datadir}/bash-completion/completions/voxtype
 %license %{_docdir}/voxtype/LICENSE
 %doc %{_docdir}/voxtype/README.md
+%doc %{_docdir}/voxtype/THIRD_PARTY.md
 %{_datadir}/fish/vendor_completions.d/voxtype.fish
+%{_mandir}/man1/voxtype*.1*
 %{_datadir}/voxtype
 %{_datadir}/zsh/site-functions/_voxtype
 
