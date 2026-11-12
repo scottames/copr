@@ -4,13 +4,13 @@ Name:           herdr-core
 # Keep each architecture's version and checksum together for Renovate.
 %ifarch x86_64
 %global upstream_arch x86_64
-%global upstream_sha256 ac6b86890c451a37584620aaa438b71bc0d0bd430a2e7c1d7e095f052c414e74
-Version:        0.1.20
+%global upstream_sha256 78424755c10a40dde38a0bdb55c20ac19706e9ae05ed68fc2acf1fcff0d941c1
+Version:        0.1.21
 %endif
 %ifarch aarch64
 %global upstream_arch aarch64
-%global upstream_sha256 5f3037379d15cc76cfc72d2fd1a4262ea1c5b24df278bf7cfd8adcff7b914862
-Version:        0.1.20
+%global upstream_sha256 e844a2bfab48a226097679d076bc83042fe57fccef5387ef802e5b24e78b529a
+Version:        0.1.21
 %endif
 Release:        1%{?dist}
 Summary:        Persistent terminal runtime for coding agents
