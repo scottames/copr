@@ -219,6 +219,8 @@ echo ""
 %doc %{_docdir}/voxtype/README.md
 %doc %{_docdir}/voxtype/THIRD_PARTY.md
 %{_datadir}/fish/vendor_completions.d/voxtype.fish
+%{_datadir}/icons/hicolor/128x128/apps/voxtype.png
+%{_datadir}/icons/hicolor/scalable/apps/voxtype.svg
 %{_mandir}/man1/voxtype*.1*
 %{_datadir}/voxtype
 %{_datadir}/zsh/site-functions/_voxtype
