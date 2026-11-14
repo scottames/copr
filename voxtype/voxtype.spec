@@ -1,10 +1,10 @@
 %global upstream_release 1
 %global upstream_rpm %{name}-%{version}-%{upstream_release}.x86_64.rpm
-%global upstream_rpm_sha256 cbf7a3b0332584fe84c5a9b6d76b37d15bb9f4c84c90791be096c057fada24de
+%global upstream_rpm_sha256 dac5e4dab34299d68cc5890a46ebd79e4ac48c789bf53423c58c67e55743b8a5
 %global debug_package %{nil}
 
 Name:           voxtype
-Version:        1.2.1
+Version:        1.2.2
 Release:        1%{?dist}
 Summary:        Push-to-talk voice-to-text for Linux
 
