@@ -203,6 +203,7 @@ echo ""
 %{_prefix}/lib/voxtype/voxtype-gguf-worker-onnx-avx2
 %{_prefix}/lib/voxtype/voxtype-gguf-worker-onnx-avx512
 %{_prefix}/lib/voxtype/voxtype-gguf-worker-vulkan
+%{_prefix}/lib/voxtype/voxtype-meetings-gtk4
 %{_prefix}/lib/voxtype/voxtype-onnx-avx2
 %{_prefix}/lib/voxtype/voxtype-onnx-avx512
 %{_prefix}/lib/voxtype/voxtype-onnx-cuda-12
@@ -214,6 +215,7 @@ echo ""
 %{_prefix}/lib/voxtype/voxtype-osd-quickshell
 %{_prefix}/lib/voxtype/voxtype-vulkan
 %{_datadir}/applications/voxtype-configure.desktop
+%{_datadir}/applications/voxtype-meetings.desktop
 %{_datadir}/bash-completion/completions/voxtype
 %license %{_docdir}/voxtype/LICENSE
 %doc %{_docdir}/voxtype/README.md
