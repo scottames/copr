@@ -59,8 +59,8 @@ func (m *Copr) BuildSpecFile(
 		// Copy additional source files from the spec directory to SOURCES
 		WithExec(shC(fmt.Sprintf("find %s -type f \\( -name '*.desktop' -o -name '*.json' -o -name '*.sh' -o -name '*.conf' -o -name '*.patch' \\) -exec cp {} /root/rpmbuild/SOURCES/ \\;", specFileDir))).
 
-		// Copy any files without extension that might be scripts (like zen-browser)
-		WithExec(shC(fmt.Sprintf("find %s -type f ! -name '*.spec' ! -name '*.md' ! -name '.*' -exec sh -c 'file \"$1\" | grep -q \"text\\|script\" && cp \"$1\" /root/rpmbuild/SOURCES/' _ {} \\;", specFileDir))).
+		// Include other local text sources, such as lockfiles, units, and package documentation.
+		WithExec(shC(fmt.Sprintf("find %s -type f ! -name '*.spec' ! -name '.*' -exec sh -c 'file \"$1\" | grep -q \"text\\|script\" && cp \"$1\" /root/rpmbuild/SOURCES/' _ {} \\;", specFileDir))).
 
 		// Validate spec file syntax first
 		WithExec([]string{"rpmspec", "-q", "--srpm", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
@@ -73,6 +73,8 @@ func (m *Copr) BuildSpecFile(
 
 		// Build the binary RPM
 		WithExec([]string{"rpmbuild", "-bb", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
+		// Exercise xremap's optional service integration without starting a remapper.
+		WithExec(shC(fmt.Sprintf("if [ %q = xremap/xremap.spec ]; then XREMAP_TEST_DISPOSABLE=1 bash xremap/test-package.sh /root/rpmbuild/RPMS/*/xremap-[0-9]*.rpm; fi", specFile))).
 		WithExec([]string{"echo", fmt.Sprintf("✓ %s", specFile)}).
 		Stdout(ctx)
 }

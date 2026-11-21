@@ -1,65 +1,244 @@
-# xremap for Fedora x86_64
+# xremap for Fedora
 
-This package builds one `xremap` binary. It installs no units, device rules,
-users, groups or mappings. Deployment and rollback testing belong to SCT-376.
+- **Package**
+  - Fedora 44 and 45, on x86_64 and aarch64.
+  - Upstream's `full` variant supports X11, GNOME, KDE, Hyprland, wlroots,
+    Niri, COSMIC, Pantheon, and the socket bridge.
+  - Includes system and user units, a dedicated account, uinput setup,
+    Bash/Zsh/Fish completions, upstream documentation, and example mappings.
+  - Services are disabled by default. No active mappings or desktop-user
+    permission grants are installed.
+  - The service files are Fedora packaging adaptations of upstream's
+    examples, not a separate upstream installer.
 
-## Build inputs
+- **Install**
+  - On Fedora:
+    ```sh
+    sudo dnf copr enable scottames/xremap
+    sudo dnf install xremap
+    ```
+  - On an Atomic Desktop, add the COPR repository to the host or image, then
+    install through the normal image/layering workflow and reboot.
+  - This package installs `/usr/lib/modules-load.d/xremap.conf` to load
+    `uinput` at boot and a udev rule granting its device to `xremap:xremap`.
+    - This changes device setup even while the services are disabled.
+    - It does not grant the desktop user raw input or uinput access.
+    - To apply it without rebooting:
+      ```sh
+      sudo modprobe uinput
+      sudo udevadm control --reload-rules
+      sudo udevadm trigger --action=add --subsystem-match=misc --sysname-match=uinput
+      ```
 
-- `git ls-remote https://github.com/xremap/xremap.git refs/tags/v0.15.18`
-  returned `23e880d441bf968de396c731fdcea18b1af62d9b`. The spec fetches the
-  archive by that commit and checks its SHA-256 before extraction.
-- Starting from the archive's lockfile, `cargo update -p rustix@1.1.5 --precise
-  1.1.6` changed only the rustix version and registry checksum. Both lockfile
-  hashes are enforced in `%prep`. Do not regenerate the lock during a build.
-- Cargo and rustc are pinned to 1.99.1 on Fedora 44 and 1.100.0 on Fedora 45.
-  The Fedora chroot supplies the C
-  linker and RPM tooling. Keep the COPR buildroot package list with each
-  build; OS updates can change the resulting RPM hash.
-- Cargo fetches crates over the network and verifies registry checksums from
-  the lockfile. Build and tests use `--release --locked --no-default-features
-  --features socket,niri`. The upstream `full` and `device-test` features are
-  intentionally excluded.
+- **Choose one remapper mode**
+  - The recommended mode is the system service with a desktop-session bridge.
+    - The system process gets raw input access; the desktop user does not.
+    - All users share the system mappings.
+  - Alternatively, use the direct user remapper.
+    - It requires separate administrator-approved raw input and uinput access.
+    - It exposes the desktop account to keylogging and input injection.
+  - Do not run both remappers against the same devices.
+    - The two user units conflict with each other.
+    - The system and user managers cannot enforce conflicts across managers.
 
-## Dependency review (2026-11-19)
+- **System service**
+  - Validate your configuration before deployment:
+    ```sh
+    xremap --validate-config ./config.yml
+    sudo install -o root -g root -m 0644 ./config.yml /etc/xremap/config.yml
+    ```
+    - YAML and TOML are supported. The default unit uses `config.yml`.
+    - For TOML, install `config.toml` and replace the configuration path in
+      `ExecStart` through `sudo systemctl edit xremap.service`.
+    - Examples are in `/usr/share/doc/xremap/`; none are installed as active
+      configuration.
+  - The unit runs as the unprivileged `xremap` account.
+    - `SupplementaryGroups=input` grants input access only to the service.
+    - The udev rule grants uinput access to its primary group.
+    - Configuration and unit files remain root-owned.
+    - Do not add desktop users to the service's `xremap` group.
+  - The default command is:
+    ```sh
+    /usr/bin/xremap --desktop=socket --watch=device --no-window-logging /etc/xremap/config.yml
+    ```
+    - To use global mappings without a bridge, override `--desktop=socket`
+      with `--desktop=none`.
+    - Reset `ExecStart` before replacing it in a drop-in:
+      ```ini
+      [Service]
+      ExecStart=
+      ExecStart=/usr/bin/xremap --desktop=none --watch=device --no-window-logging /etc/xremap/config.yml
+      ```
+  - Start only after configuration and permissions are ready:
+    ```sh
+    sudo systemctl enable --now xremap.service
+    ```
 
-From the unpacked source with the packaged `Cargo.lock`, the release graph is:
+- **Desktop bridge and per-user socket setup**
+  - The bridge runs in the desktop session with no raw input access.
+  - An administrator must create a separate socket-access group for each
+    intended user.
+    - Replace `USERNAME`, `UID`, and `SOCKET_GROUP` below.
+    - Find the numeric UID with `id -u USERNAME`.
+    - Do not use `input` or the service's `xremap` group as `SOCKET_GROUP`.
+    ```sh
+    sudo groupadd --system SOCKET_GROUP
+    sudo usermod --append --groups SOCKET_GROUP USERNAME
+    sudo install -d -m 0755 /etc/systemd/system/xremap.service.d
+    sudo systemctl edit xremap.service
+    ```
+  - Add this system-service drop-in:
+    ```ini
+    [Service]
+    SupplementaryGroups=SOCKET_GROUP
+    ExecStartPre=+/usr/bin/install -d -o xremap -g SOCKET_GROUP -m 2770 /run/xremap/UID
+    ```
+    - `SupplementaryGroups` adds to the unit's `input` membership.
+    - The `+` prefix gives this directory-creation command root credentials;
+      the remapper itself remains unprivileged.
+    - The setgid directory restricts the socket to the service and that user.
+    - Repeat the group and drop-in entries for each intended user.
+  - Log out and back in so the desktop session gets its group membership.
+  - Restart the system service to create the directory, then enable the
+    bridge from a desktop terminal:
+    ```sh
+    sudo systemctl daemon-reload
+    sudo systemctl restart xremap.service
+    systemctl --user enable --now xremap-bridge.service
+    ```
+  - The bridge auto-selects the desktop.
+    - Use `systemctl --user edit xremap-bridge.service` to reset `ExecStart`
+      and set `--desktop=niri`, `--desktop=kde`, or another supported backend
+      when auto-selection is unsuitable.
+    - Ensure the user manager has the desktop environment and connection
+      variables, such as `NIRI_SOCKET`, `WAYLAND_DISPLAY`, or `DISPLAY`.
+    - The session must manage `graphical-session.target` for automatic
+      startup/shutdown. Otherwise use the desktop's session-start mechanism.
+    - GNOME may use its upstream extension instead of this bridge.
+  - See the installed `doc/running_as_system_service.md` for upstream's
+    socket model and desktop-specific requirements.
 
-```sh
-cargo tree --locked --target x86_64-unknown-linux-gnu --no-default-features \
-  --features socket,niri -e normal,build --prefix none --format '{p}'
-```
+- **Direct user remapper**
+  - First arrange explicit raw input and uinput grants with the administrator.
+    - The package does not grant these to your account automatically.
+    - The upstream `doc/running_without_sudo.md` explains the tradeoffs.
+    - Its example grants uinput to `input`; this package instead reserves
+      uinput for `xremap`. A local rule or ACL is needed for direct user mode.
+  - Put your configuration in `~/.config/xremap/config.yml` and validate it.
+    ```sh
+    xremap --validate-config ~/.config/xremap/config.yml
+    systemctl --user enable --now xremap.service
+    ```
+  - Desktop auto-selection, configuration-path overrides, and graphical
+    session handling work as described above.
+  - Stop the system remapper before starting this mode.
 
-An OSV `v1/querybatch` check of all 118 distinct crates.io name/version pairs
-from this tree returned four findings. Recheck the selected graph before each
-promotion; the lock also contains optional crates that do not ship.
+- **Defaults and security**
+  - All units use `RUST_LOG=warn` and `--no-window-logging` for quiet logs.
+    - Override these explicitly for diagnostics.
+    - Debug output may include keystrokes; explicit print actions can still
+      print window information. Inspect logs before sharing them.
+  - Command launching retains upstream's defaults.
+    - The remapper defaults to allowing launch actions.
+    - The bridge defaults to denying them; launching in a socket-based
+      session needs explicit `--allow-launch=true` on the bridge.
+    - For no command execution, explicitly set `--allow-launch=false` on
+      both processes and keep launch actions out of the mappings.
+  - The package does not impose a personal confinement profile.
+    - Administrators can add hardening through service drop-ins.
+    - Do not hide the required input devices, desktop sockets, or logind IPC.
+  - Remapping can remain active while the screen is locked.
+    - Validate lock/unlock, user switching, and logout behavior for your setup.
+  - Fedora SELinux remains enabled.
+    - No custom policy or permissive-mode workaround is installed.
+    - Live device/session behavior must be checked on the intended host.
 
-| Build dependency | Trial decision and follow-up |
-| --- | --- |
-| rustix 1.1.6 | Fixes RUSTSEC-2026-0486; no OSV hit for the selected version. |
-| serde_yaml 0.9.34+deprecated → unsafe-libyaml 0.2.11 | RUSTSEC-2024-0449: temporarily retain the unmaintained parser. Use TOML in deployment; it does not remove the compiled dependency. Revisit when upstream replaces or gates YAML. |
-| zbus 5.19.0 → zbus_names 4.3.5, zvariant 5.15.1, zvariant_derive 5.15.1 | RUSTSEC-2026-0371, -0370 and -0372: temporarily retain these unmaintained crates for `socket`. Upstream requires zbus `^5.15.0`; migration to 6 requires source review and service/bridge testing, not a lock-only update. Revisit at the next upstream bump. |
+- **Updates and removal**
+  - Unit presets disable fresh installations but respect administrator
+    overrides and existing enablement on upgrades.
+  - Updates do not request an automatic restart of the remapper.
+    - Restart deliberately after checking the new configuration.
+  - Stop and disable the chosen units before removing the package.
+    ```sh
+    systemctl --user disable --now xremap-bridge.service
+    systemctl --user disable --now xremap.service
+    sudo systemctl disable --now xremap.service
+    ```
+    - Run only the commands for the modes you enabled.
+  - Local configuration, per-user groups, and administrator drop-ins are not
+    removed by the RPM.
+    - The service account is retained to avoid reusing its UID for old files.
+    - Remove obsolete socket groups/directories and local device grants
+      separately when no longer needed.
+    - Reload udev rules after removal, or reboot. Existing device permissions
+      and the loaded module need not disappear when a rule is removed.
 
-The local x86_64 release build reported `xremap 0.15.18`; 374 tests passed.
-Its **standalone binary** SHA-256 was
-`f8052c49c298c1066bf1681adf89dcd2fc9fff8fd7bb8e160b144b2b7b813889`.
-These checks do not exercise physical input devices or a live Niri session.
+- **Build inputs**
+  - v0.15.18 resolves to commit `23e880d441bf968de396c731fdcea18b1af62d9b`.
+    - The spec verifies the source archive and upstream lockfile hashes.
+    - The packaged lock changes only rustix 1.1.5 to 1.1.6 and its checksum.
+    - The replacement lockfile hash is checked in `%prep`.
+  - Cargo and rustc are pinned to 1.99.1 on Fedora 44 and 1.100.0 on Fedora 45.
+    - Keep the buildroot package list with each build; OS tooling can affect
+      the output even when Rust inputs are locked.
+  - Build and test with:
+    ```sh
+    cargo build --release --locked --no-default-features --features full
+    cargo test --release --locked --no-default-features --features full
+    ```
+    - `device-test` is excluded.
+    - COPR networking must be enabled so Cargo can fetch verified locked crates.
 
-## COPR handoff (Scotty)
+- **Dependency review**
+  - Review the exact normal/build graph for each architecture:
+    ```sh
+    cargo tree --locked --target x86_64-unknown-linux-gnu \
+      --no-default-features --features full -e normal,build
+    cargo tree --locked --target aarch64-unknown-linux-gnu \
+      --no-default-features --features full -e normal,build
+    ```
+  - On 2026-11-21, both target graphs contained the same 152 distinct
+    crates.io name/version pairs.
+    - An OSV `v1/querybatch` check returned four findings, all previously
+      recorded unmaintained-crate exceptions.
+    - rustix 1.1.6 addresses RUSTSEC-2026-0486 and had no OSV finding.
+    - Temporarily retain unsafe-libyaml 0.2.11 (RUSTSEC-2024-0449) for upstream
+      YAML support; revisit when upstream replaces or gates the parser.
+    - Temporarily retain zbus_names 4.3.5 / zvariant 5.15.1 /
+      zvariant_derive 5.15.1 (RUSTSEC-2026-0371, -0370, -0372) for upstream's
+      zbus 5 integrations; revisit at the next upstream update.
+    - YAML remains a compiled dependency even when mappings use TOML.
+    - A migration to zbus 6 needs source and service testing, not just a lock
+      update.
+  - Recheck advisories before promotion and record findings in SCT-382.
+    - This extends the earlier 118-crate `socket,niri` review to `full`.
 
-After the reviewed spec and lock are available together on `main`, create the
-project and its SCM package once, then request the build:
+- **Package tests**
+  - `%check` runs the non-device Rust tests, verifies all desktop integrations,
+    and checks valid YAML/TOML and invalid configuration.
+  - PR builds also run `test-package.sh` after building the RPM.
+    - The script installs, reinstalls, and removes the package in a disposable
+      Fedora container; it never starts a remapper.
+    - It checks account creation, unit/rule syntax, file ownership, disabled
+      initial services, and preservation of local configuration and enablement.
+    - Never run it on a real host. It writes `/etc` and removes the RPM.
+    - Physical device access, desktop connections, SELinux behavior, and
+      restart/lock/session behavior still need live testing.
 
-```sh
-copr-cli create --chroot fedora-44-x86_64 --chroot fedora-45-x86_64 \
-  --enable-net on scottames/xremap
-copr-cli add-package-scm scottames/xremap --name xremap --type git \
-  --clone-url https://github.com/scottames/copr.git --commit main \
-  --subdir xremap --spec xremap.spec --method rpkg --webhook-rebuild off
-copr-cli build-package --chroot fedora-44-x86_64 --chroot fedora-45-x86_64 \
-  --name xremap scottames/xremap
-```
-
-If the repository workflow has already requested the build, inspect that build
-instead of submitting another. Before promotion, record the COPR build ID,
-packaging commit, chroots and `sha256sum` of each downloaded RPM and SRPM in
-SCT-382. Retain the previous tested RPM and its checksum for rollback.
+- **COPR builds**
+  - The existing project is `scottames/xremap`; do not create it again.
+  - While reviewing PR #780, its SCM package tracks `feat/sct-382-xremap`.
+    - Change it to `main` after merge.
+  - Explicitly request the four supported targets:
+    ```sh
+    copr-cli build-package --name xremap \
+      --chroot fedora-44-x86_64 --chroot fedora-44-aarch64 \
+      --chroot fedora-45-x86_64 --chroot fedora-45-aarch64 scottames/xremap
+    ```
+    - Inspect any already-requested build before submitting a duplicate.
+    - Rawhide is not an acceptance target for this package change.
+  - Record build IDs, packaging commit, chroots, RPM/SRPM SHA-256 checksums,
+    and dependency findings in SCT-382.
+  - Scotty's deployment belongs to SCT-376.
+    - Discuss ownership between `dots` and `containers` with Scotty when that
+      issue is worked; no personal repository split is decided here.

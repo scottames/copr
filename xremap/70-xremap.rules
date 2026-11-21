@@ -1,0 +1,2 @@
+# Only the system remapper account gets uinput access from this package.
+SUBSYSTEM=="misc", KERNEL=="uinput", GROUP="xremap", MODE="0660", OPTIONS+="static_node=uinput"

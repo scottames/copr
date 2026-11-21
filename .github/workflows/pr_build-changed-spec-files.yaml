@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "*/*.spec"
+      - "xremap/**"
       - ".github/spec-build-targets.json"
       - ".dagger/**"
       - "dagger.json"
@@ -34,6 +35,7 @@ jobs:
         with:
           files: |
             **/*.spec
+            xremap/**
       - name: changed build targets
         id: changed-build-targets
         # https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised
@@ -70,15 +72,19 @@ jobs:
               files=$(printf '%s\n' $files mise/mise.spec | sort -u)
             fi
           fi
+          # Changes to xremap's local sources must rebuild its spec too.
+          files=$(tr ' ' '\n' <<< "$files" | sed 's|^xremap/.*|xremap/xremap.spec|' | sort -u)
           include_array='[]'
 
           if [ -n "$files" ]; then
             for file in $files; do
-              os="ubuntu-24.04"
+              runners="ubuntu-24.04"
               file_fedora_versions="$fedora_versions"
 
               if [[ "$file" == *aarch64.spec ]] || [[ "$file" == *arm.spec ]]; then
-                os="ubuntu-24.04-arm"
+                runners="ubuntu-24.04-arm"
+              elif grep -Eq '^ExclusiveArch:.*\bx86_64\b.*\baarch64\b|^ExclusiveArch:.*\baarch64\b.*\bx86_64\b' "$file"; then
+                runners="ubuntu-24.04 ubuntu-24.04-arm"
               fi
 
               override_versions=$(jq -r --arg spec "$file" '.[$spec] // empty | join(" ")' <<< "$spec_fedora_versions_json")
@@ -86,12 +92,14 @@ jobs:
                 file_fedora_versions="$override_versions"
               fi
 
-              for fv in $file_fedora_versions; do
-                include_array=$(echo "$include_array" | jq -c \
-                  --arg spec "$file" \
-                  --arg os "$os" \
-                  --arg fv "$fv" \
-                  '. += [{"spec-file": $spec, "os": $os, "fedora-version": $fv}]')
+              for os in $runners; do
+                for fv in $file_fedora_versions; do
+                  include_array=$(echo "$include_array" | jq -c \
+                    --arg spec "$file" \
+                    --arg os "$os" \
+                    --arg fv "$fv" \
+                    '. += [{"spec-file": $spec, "os": $os, "fedora-version": $fv}]')
+                done
               done
             done
           fi
@@ -100,7 +108,7 @@ jobs:
           echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
   # yamllint enable rule:line-length
   build-spec:
-    name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }})
+    name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }}, ${{ matrix.os }})
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true'
     runs-on: ${{ matrix.os }}

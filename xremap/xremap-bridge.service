@@ -1,0 +1,15 @@
+[Unit]
+Description=Xremap desktop bridge
+Documentation=https://github.com/xremap/xremap/blob/v0.15.18/doc/running_as_system_service.md
+PartOf=graphical-session.target
+After=graphical-session.target
+Conflicts=xremap.service
+
+[Service]
+ExecStart=/usr/bin/xremap --bridge --no-window-logging
+Environment=RUST_LOG=warn
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
