@@ -1,3 +1,7 @@
+# Build reference: upstream's full feature definition and source-install guide.
+# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/Cargo.toml
+# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/development/install_from_source.md
+# Fedora-specific source files and differences are mapped in README.md.
 %global commit 23e880d441bf968de396c731fdcea18b1af62d9b
 %global cargo_args --release --locked --no-default-features --features full
 %if 0%{?fedora} == 44
@@ -13,6 +17,9 @@ Summary:        Linux key remapper with X11 and Wayland desktop support
 License:        MIT
 URL:            https://github.com/xremap/xremap
 Source0:        https://codeload.github.com/xremap/xremap/tar.gz/%{commit}#/%{name}-%{commit}.tar.gz
+# Based on upstream's lockfile; only rustix 1.1.5 -> 1.1.6 differs.
+# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/Cargo.lock
+# https://rustsec.org/advisories/RUSTSEC-2026-0486.html
 Source1:        Cargo.lock
 Source2:        README.md
 Source3:        xremap.service

@@ -1,6 +1,9 @@
+# Fedora-authored unit around upstream's documented "xremap --bridge" command.
+# Upstream describes a user service but does not supply a separate bridge unit.
+# See Documentation below and README.md for the packaging choices.
 [Unit]
 Description=Xremap desktop bridge
-Documentation=https://github.com/xremap/xremap/blob/v0.15.18/doc/running_as_system_service.md
+Documentation=https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_as_system_service.md#other-desktops-than-gnome
 PartOf=graphical-session.target
 After=graphical-session.target
 Conflicts=xremap.service

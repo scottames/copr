@@ -1,2 +1,6 @@
+# Fedora policy, not an upstream-provided preset: activation remains opt-in.
+# Upstream's explicit enable step:
+# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_as_system_service.md#autostart-xremap-at-boot
+# Format: https://www.freedesktop.org/software/systemd/man/latest/systemd.preset.html
 disable xremap.service
 disable xremap-bridge.service

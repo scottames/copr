@@ -1,2 +1,5 @@
+# Adapted from upstream's uinput rule:
+# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_without_sudo.md#output-permission
+# Unlike the direct-user example, use group xremap and omit the uaccess grant.
 # Only the system remapper account gets uinput access from this package.
 SUBSYSTEM=="misc", KERNEL=="uinput", GROUP="xremap", MODE="0660", OPTIONS+="static_node=uinput"

@@ -1,6 +1,10 @@
+# Fedora adaptation of upstream's example/xremap.service (Documentation below).
+# Differences: graphical-session lifecycle, mode conflict, config guard, quiet logs,
+# and delayed failure restart; upstream's memory/network limits are not copied.
 [Unit]
 Description=Xremap user input remapper
-Documentation=https://github.com/xremap/xremap
+Documentation=https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_as_user_service.md
+Documentation=https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/example/xremap.service
 PartOf=graphical-session.target
 After=graphical-session.target
 Conflicts=xremap-bridge.service
