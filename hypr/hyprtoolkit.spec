@@ -65,7 +65,7 @@ sed -i '/#include "ConfigManager.hpp"/a #include <climits>\n#include <unistd.h>'
 %license LICENSE
 %doc README.md
 %{_libdir}/lib%{name}.so.%{version}
-%{_libdir}/lib%{name}.so.6
+%{_libdir}/lib%{name}.so.7
 
 %files devel
 %{_includedir}/%{name}/
