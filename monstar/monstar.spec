@@ -1,15 +1,15 @@
-%global upstream_source_sha256 d5c0ed14432c7610bbbfbb798e87a595102c2f42c8ef0517de3e89db9de1781a
+%global upstream_source_sha256 ce2feac87c14241b8373b82ba3c38610e6a8516cf857c4457fa612e5b1997724
 %global debug_package %{nil}
 
 Name:           monstar
-Version:        1.4.0
+Version:        1.4.1
 Release:        %autorelease
 Summary:        Linux-native Wayland terminal built on the Ghostty terminal core
 
 License:        MIT
 URL:            https://github.com/rockorager/monstar
 Source0:        https://github.com/rockorager/monstar/releases/download/v%{version}/monstar-%{version}-source.tar.gz
-# patch-guard: remove-after-version=1.4.0 reason=zig-lld-aarch64-glibc-symbols
+# patch-guard: remove-after-version=1.4.1 reason=zig-lld-aarch64-glibc-symbols
 Patch0:         monstar-1.1.0-zig-linker-aarch64.patch
 
 ExclusiveArch:  x86_64 aarch64
