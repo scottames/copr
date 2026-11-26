@@ -1,10 +1,10 @@
 %global upstream_release 1
 %global upstream_rpm %{name}-%{version}-%{upstream_release}.x86_64.rpm
-%global upstream_rpm_sha256 dac5e4dab34299d68cc5890a46ebd79e4ac48c789bf53423c58c67e55743b8a5
+%global upstream_rpm_sha256 5b3507c48c8233bc1354d6b470ee745f55c2b4cc8aafc3d426cf4040f4fe4034
 %global debug_package %{nil}
 
 Name:           voxtype
-Version:        1.2.2
+Version:        1.3.0
 Release:        1%{?dist}
 Summary:        Push-to-talk voice-to-text for Linux
 
@@ -203,6 +203,7 @@ echo ""
 %{_prefix}/lib/voxtype/voxtype-gguf-worker-onnx-avx2
 %{_prefix}/lib/voxtype/voxtype-gguf-worker-onnx-avx512
 %{_prefix}/lib/voxtype/voxtype-gguf-worker-vulkan
+%{_prefix}/lib/voxtype/voxtype-meetings-gtk4
 %{_prefix}/lib/voxtype/voxtype-onnx-avx2
 %{_prefix}/lib/voxtype/voxtype-onnx-avx512
 %{_prefix}/lib/voxtype/voxtype-onnx-cuda-12
@@ -214,6 +215,7 @@ echo ""
 %{_prefix}/lib/voxtype/voxtype-osd-quickshell
 %{_prefix}/lib/voxtype/voxtype-vulkan
 %{_datadir}/applications/voxtype-configure.desktop
+%{_datadir}/applications/voxtype-meetings.desktop
 %{_datadir}/bash-completion/completions/voxtype
 %license %{_docdir}/voxtype/LICENSE
 %doc %{_docdir}/voxtype/README.md
