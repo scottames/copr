@@ -22,7 +22,7 @@ const { extractPackageFile } = await load('modules/manager/custom/regex/index.js
 const { applyPackageRules } = await load('util/package-rules/index.js');
 const { lookupUpdates } = await load('workers/repository/process/lookup/index.js');
 const { doAutoReplace } = await load('workers/repository/update/branch/auto-replace.js');
-const { embedChangelog } = await load('workers/repository/changelog/index.js');
+const { embedChangelogs } = await load('workers/repository/changelog/index.js');
 const config = json5.parse(await readFile('.github/renovate.json5', 'utf8'));
 
 for (const name of ['herdr-app', 'herdr-core', 'hex', 'hokum']) {
@@ -135,6 +135,7 @@ for (const name of ['herdr-app', 'herdr-core', 'hex', 'hokum']) {
           customDatasources: config.customDatasources,
           packageRules: config.packageRules,
           automerge: config.automerge,
+          fetchChangeLogs: 'pr',
           minimumReleaseAge: config.minimumReleaseAge,
           updatePinnedDependencies: true,
           pinDigests: false,
@@ -155,8 +156,9 @@ for (const name of ['herdr-app', 'herdr-core', 'hex', 'hokum']) {
         assert.equal(result.updates[0].updateType, 'patch');
         assert.equal(result.changelogContent, notes);
         const upgrade = { ...settings, ...result, ...result.updates[0] };
-        await embedChangelog(upgrade);
-        assert.equal(upgrade.logJSON.versions[0].releaseNotes.body, notes);
+        await embedChangelogs({ upgrades: [upgrade], stage: 'pr' });
+        assert.equal(upgrade.logJSON?.versions[0].releaseNotes.body,
+          name === 'hex' && dep.depType === 'arm64' ? undefined : notes);
         updated = await doAutoReplace(upgrade, updated, false, i === 0);
         assert.equal(extractPackageFile(updated, packageFile, manager).deps[1 - i].currentValue,
           i === 0 ? deps[1].currentValue : (herdr ? `${nextVersion}+${newDigests[0]}` : nextVersion));

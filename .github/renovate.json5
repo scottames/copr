@@ -29,6 +29,11 @@
       matchPackageNames: ['anomalyco/hex'],
       groupName: 'hex RPMs',
     },
+    {
+      description: 'Use x64 release notes for grouped Hex RPM updates',
+      matchDatasources: ['custom.hex-rpm-arm64'],
+      fetchChangeLogs: 'off',
+    },
   ],
   customDatasources: {
     'herdr-app-x86_64': {
