@@ -22,9 +22,6 @@ sudo dnf copr enable scottames/xremap
 sudo dnf install xremap
 ```
 
-On an Atomic Desktop, add the COPR repository to the host or image, install
-through the normal image/layering workflow, and reboot.
-
 The RPM creates a non-login `xremap` account and configures uinput module loading
 and device access. These device settings apply even while services are disabled.
 Reboot to apply them, or follow upstream's [without-reboot instructions][setup-reboot].
@@ -34,10 +31,10 @@ Reboot to apply them, or follow upstream's [without-reboot instructions][setup-r
 Use upstream's [configuration reference][setup-config], [CLI reference][setup-cli],
 and [troubleshooting guide][setup-troubleshooting]. Choose a startup mode:
 
-| Mode | Upstream guide | Packaged units | Default configuration |
-| --- | --- | --- | --- |
-| System service with desktop bridge — recommended | [System-service setup][setup-system] | System `xremap.service`; user `xremap-bridge.service` | `/etc/xremap/config.yml` |
-| Direct user service | [User-service setup][setup-user] and [device permissions][setup-permissions] | User `xremap.service` | `~/.config/xremap/config.yml` |
+| Mode                                             | Upstream guide                                                               | Packaged units                                        | Default configuration         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------- |
+| System service with desktop bridge — recommended | [System-service setup][setup-system]                                         | System `xremap.service`; user `xremap-bridge.service` | `/etc/xremap/config.yml`      |
+| Direct user service                              | [User-service setup][setup-user] and [device permissions][setup-permissions] | User `xremap.service`                                 | `~/.config/xremap/config.yml` |
 
 Apply the RPM-specific differences below rather than repeating upstream's
 manual installation steps.
