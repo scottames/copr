@@ -3,14 +3,15 @@
 %global rust_version 1.100.0
 
 Name:           xremap
-%global commit 23e880d441bf968de396c731fdcea18b1af62d9b
-Version:        0.15.18
+%global commit 5bb2b582cd603d3467b61cd8aca259898d113ec3
+Version:        0.15.19
 Release:        %autorelease
 Summary:        Linux key remapper with X11 and Wayland desktop support
 License:        MIT
 URL:            https://github.com/xremap/xremap
 Source0:        https://codeload.github.com/xremap/xremap/tar.gz/%{commit}#/%{name}-%{commit}.tar.gz
-# patch-guard: remove-after-version=0.15.18 reason=rustix-security-fix
+# Reviewed for this release: upstream still locks rustix 1.1.5; patch applies unchanged.
+# patch-guard: remove-after-version=0.15.19 reason=rustix-security-fix
 Patch0:         xremap-rustix.patch
 Source2:        README.md
 Source3:        xremap.service

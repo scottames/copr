@@ -10,6 +10,11 @@
   automerge: true,
   packageRules: [
     {
+      description: 'Ignore mislabeled xremap v0.16.6 tag; its source version is 0.10.6',
+      matchPackageNames: ['xremap/xremap'],
+      allowedVersions: '!/^0\\.16\\.6$/',
+    },
+    {
       description: 'Do not automatically trust retagged xremap releases',
       matchPackageNames: ['xremap/xremap'],
       matchUpdateTypes: ['digest'],

@@ -76,6 +76,49 @@ test('xremap: update version and commit together, reset Release, and retain norm
   }
 });
 
+for (const nextVersion of ['0.15.19', '0.16.7']) {
+  test(`xremap: ignore mislabeled 0.16.6 tag and allow ${nextVersion}`, async () => {
+    const packageFile = 'xremap/xremap.spec';
+    const manager = config.customManagers.find((m) => m.depNameTemplate === 'xremap/xremap');
+    const content = await readFile(packageFile, 'utf8');
+    const [dep] = extractPackageFile(content, packageFile, manager).deps;
+    const nextDigest = 'c'.repeat(40);
+    const directory = await mkdtemp(join(tmpdir(), 'renovate-xremap-'));
+    GlobalConfig.set({ platform: 'github', localDir: directory });
+    const datasource = getDatasourceFor('github-tags');
+    const getReleases = datasource.getReleases;
+    const getDigest = datasource.getDigest;
+    datasource.getReleases = async () => ({
+      sourceUrl: 'https://github.com/xremap/xremap',
+      releases: [
+        { version: 'v0.15.18', newDigest: 'a'.repeat(40) },
+        { version: 'v0.16.6', newDigest: 'b'.repeat(40) },
+        { version: `v${nextVersion}`, newDigest: nextDigest },
+      ],
+    });
+    datasource.getDigest = async () => nextDigest;
+    try {
+      const settings = await applyPackageRules({
+        ...manager, ...dep, packageFile, packageName: dep.depName,
+        currentValue: '0.15.18', currentDigest: 'a'.repeat(40),
+        manager: 'regex', depIndex: 0, packageRules: config.packageRules,
+        automerge: config.automerge, updatePinnedDependencies: true,
+        pinDigests: false, rangeStrategy: 'replace',
+      });
+      const result = (await lookupUpdates(settings)).unwrap();
+      assert.equal(result.ok, true);
+      assert.deepEqual(result.val.warnings, []);
+      assert.equal(result.val.updates.length, 1);
+      assert.equal(result.val.updates[0].newValue, nextVersion);
+      assert.equal(result.val.updates[0].newDigest, nextDigest);
+    } finally {
+      datasource.getReleases = getReleases;
+      datasource.getDigest = getDigest;
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+}
+
 for (const name of ['herdr-app', 'herdr-core', 'hex', 'hokum']) {
   const herdr = name.startsWith('herdr-');
   const depName = `${herdr ? 'herdrdev' : 'anomalyco'}/${name}`;
