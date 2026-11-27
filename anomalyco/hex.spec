@@ -4,13 +4,13 @@ Name:           hex
 # Keep each architecture's version and checksum together for Renovate.
 %ifarch x86_64
 %global upstream_arch x64
-%global upstream_rpm_sha256 a0931072f26b47dc6994485047088b876d8a8d24bde9ce115060cc2f1d774720
-Version:        3.5.0
+%global upstream_rpm_sha256 0b3e5b6493dd4e49c508c5a206baf87065a5dc1fb6a608339d97eaba00c797de
+Version:        3.5.1
 %endif
 %ifarch aarch64
 %global upstream_arch arm64
-%global upstream_rpm_sha256 dce71dc325f455ada36e2b9ad9204b0a52b8f8b168c3197d0a8176292b6b4555
-Version:        3.5.0
+%global upstream_rpm_sha256 6426d1763160f68e530b73ebe4f073219c5f5751e9cdff812d8416c0311e8f92
+Version:        3.5.1
 %endif
 Release:        1%{?dist}
 Summary:        Local voice dictation
