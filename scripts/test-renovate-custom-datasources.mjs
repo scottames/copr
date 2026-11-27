@@ -25,6 +25,57 @@ const { doAutoReplace } = await load('workers/repository/update/branch/auto-repl
 const { embedChangelogs } = await load('workers/repository/changelog/index.js');
 const config = json5.parse(await readFile('.github/renovate.json5', 'utf8'));
 
+test('xremap: update version and commit together, reset Release, and retain normal automerge', async () => {
+  const packageFile = 'xremap/xremap.spec';
+  const manager = config.customManagers.find((m) => m.depNameTemplate === 'xremap/xremap');
+  const content = await readFile(packageFile, 'utf8');
+  const deps = extractPackageFile(content, packageFile, manager).deps;
+  assert.equal(deps.length, 1);
+  const [dep] = deps;
+  assert.match(dep.currentDigest, /^[0-9a-f]{40}$/);
+  const nextVersion = dep.currentValue.replace(/\d+$/, (patch) => Number(patch) + 1);
+  const nextDigest = 'b'.repeat(40);
+  const directory = await mkdtemp(join(tmpdir(), 'renovate-xremap-'));
+  GlobalConfig.set({ platform: 'github', localDir: directory });
+  const datasource = getDatasourceFor('github-tags');
+  const getReleases = datasource.getReleases;
+  const getDigest = datasource.getDigest;
+  datasource.getReleases = async () => ({
+    sourceUrl: 'https://github.com/xremap/xremap',
+    releases: [
+      { version: `v${dep.currentValue}`, newDigest: dep.currentDigest },
+      { version: `v${nextVersion}`, newDigest: nextDigest },
+    ],
+  });
+  datasource.getDigest = async () => nextDigest;
+  try {
+    const settings = await applyPackageRules({
+      ...manager, ...dep, packageFile, packageName: dep.depName,
+      manager: 'regex', depIndex: 0, packageRules: config.packageRules,
+      automerge: config.automerge, updatePinnedDependencies: true,
+      pinDigests: false, rangeStrategy: 'replace',
+    });
+    assert.equal(settings.automerge, true);
+    const result = (await lookupUpdates(settings)).unwrap();
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.val.warnings, []);
+    assert.equal(result.val.updates.length, 1);
+    const upgrade = { ...settings, ...result.val, ...result.val.updates[0] };
+    assert.equal(upgrade.newValue, nextVersion);
+    assert.equal(upgrade.newDigest, nextDigest);
+    const updated = await doAutoReplace(upgrade, content, false, true);
+    assert.match(updated, new RegExp(`%global commit ${nextDigest}\\nVersion: +${nextVersion}\\nRelease: +%autorelease\\n`));
+    assert.equal(extractPackageFile(updated, packageFile, manager).deps[0].currentDigest, nextDigest);
+    assert.equal(updated, content.replace(dep.replaceString,
+      `%global commit ${nextDigest}\nVersion:        ${nextVersion}\nRelease:        %autorelease`));
+    assert.equal((await applyPackageRules({ ...settings, updateType: 'digest' })).enabled, false);
+  } finally {
+    datasource.getReleases = getReleases;
+    datasource.getDigest = getDigest;
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 for (const name of ['herdr-app', 'herdr-core', 'hex', 'hokum']) {
   const herdr = name.startsWith('herdr-');
   const depName = `${herdr ? 'herdrdev' : 'anomalyco'}/${name}`;

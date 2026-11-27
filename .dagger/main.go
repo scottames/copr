@@ -20,7 +20,7 @@ func shC(cmd string) []string {
 	return []string{"sh", "-c", cmd}
 }
 
-// BuildSpecFiles builds an RPM spec file
+// BuildSpecFile builds an RPM, including the spec's %check tests.
 func (m *Copr) BuildSpecFile(
 	ctx context.Context,
 	// repository root
@@ -32,6 +32,43 @@ func (m *Copr) BuildSpecFile(
 	// +default="45"
 	fedoraVersion string,
 ) (string, error) {
+	return m.buildSpecContainer(source, specFile, fedoraVersion).
+		WithExec([]string{"echo", fmt.Sprintf("✓ %s", specFile)}).
+		Stdout(ctx)
+}
+
+// TestPackage validates a built RPM in a disposable Fedora container.
+func (m *Copr) TestPackage(
+	ctx context.Context,
+	// repository root
+	// +defaultPath="/"
+	source *dagger.Directory,
+	// spec file to be built
+	specFile string,
+	// package lifecycle test script, relative to the repository root
+	testScript string,
+	// main RPM name, excluding version and architecture
+	packageName string,
+	// fedora version to build against
+	// +default="45"
+	fedoraVersion string,
+) (string, error) {
+	return m.buildSpecContainer(source, specFile, fedoraVersion).
+		WithEnvVariable("PACKAGE_TEST_DISPOSABLE", "1").
+		WithExec([]string{
+			"bash", "-c",
+			`bash "$1" /root/rpmbuild/RPMS/*/"$2"-[0-9]*.rpm`,
+			"_", testScript, packageName,
+		}).
+		Stdout(ctx)
+}
+
+// Share the lazy build graph so build and package validation can reuse cached steps.
+func (m *Copr) buildSpecContainer(
+	source *dagger.Directory,
+	specFile string,
+	fedoraVersion string,
+) *dagger.Container {
 	container := dag.Container().
 		From(
 			fmt.Sprintf("quay.io/fedora/fedora:%s", fedoraVersion),
@@ -59,8 +96,8 @@ func (m *Copr) BuildSpecFile(
 		// Copy additional source files from the spec directory to SOURCES
 		WithExec(shC(fmt.Sprintf("find %s -type f \\( -name '*.desktop' -o -name '*.json' -o -name '*.sh' -o -name '*.conf' -o -name '*.patch' \\) -exec cp {} /root/rpmbuild/SOURCES/ \\;", specFileDir))).
 
-		// Copy any files without extension that might be scripts (like zen-browser)
-		WithExec(shC(fmt.Sprintf("find %s -type f ! -name '*.spec' ! -name '*.md' ! -name '.*' -exec sh -c 'file \"$1\" | grep -q \"text\\|script\" && cp \"$1\" /root/rpmbuild/SOURCES/' _ {} \\;", specFileDir))).
+		// Include other local text sources, such as lockfiles, units, and package documentation.
+		WithExec(shC(fmt.Sprintf("find %s -type f ! -name '*.spec' ! -name '.*' -exec sh -c 'file \"$1\" | grep -q \"text\\|script\" && cp \"$1\" /root/rpmbuild/SOURCES/' _ {} \\;", specFileDir))).
 
 		// Validate spec file syntax first
 		WithExec([]string{"rpmspec", "-q", "--srpm", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
@@ -72,9 +109,7 @@ func (m *Copr) BuildSpecFile(
 		WithExec([]string{"dnf", "builddep", "-y", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
 
 		// Build the binary RPM
-		WithExec([]string{"rpmbuild", "-bb", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)}).
-		WithExec([]string{"echo", fmt.Sprintf("✓ %s", specFile)}).
-		Stdout(ctx)
+		WithExec([]string{"rpmbuild", "-bb", fmt.Sprintf("/root/rpmbuild/SPECS/%s", specFileName)})
 }
 
 // BuildSpecFiles build multiple spec files

@@ -1,0 +1,24 @@
+# Fedora adaptation of upstream's system-service example; provenance in MAINTENANCE.md.
+# Differences: multi-user target, config guard, quiet logs, and delayed failure restart.
+# See MAINTENANCE.md for provenance and README.md for administrator-owned socket setup.
+[Unit]
+Description=Xremap system input remapper
+Documentation=file:///usr/share/doc/xremap/README.fedora
+Documentation=file:///usr/share/doc/xremap/doc/running_as_system_service.md
+After=systemd-udevd.service systemd-logind.service
+ConditionPathExists=/etc/xremap/config.yml
+
+[Service]
+ExecStart=/usr/bin/xremap --desktop=socket --watch=device --no-window-logging /etc/xremap/config.yml
+User=xremap
+Group=xremap
+SupplementaryGroups=input
+RuntimeDirectory=xremap
+RuntimeDirectoryMode=0755
+RuntimeDirectoryPreserve=yes
+Environment=RUST_LOG=warn
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

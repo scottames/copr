@@ -1,0 +1,19 @@
+# Fedora-authored unit around upstream's documented "xremap --bridge" command.
+# Upstream describes a user service but does not supply a separate bridge unit.
+# See Documentation below and MAINTENANCE.md for the packaging choices.
+[Unit]
+Description=Xremap desktop bridge
+Documentation=file:///usr/share/doc/xremap/README.fedora
+Documentation=file:///usr/share/doc/xremap/doc/running_as_system_service.md
+PartOf=graphical-session.target
+After=graphical-session.target
+Conflicts=xremap.service
+
+[Service]
+ExecStart=/usr/bin/xremap --bridge --no-window-logging
+Environment=RUST_LOG=warn
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,5 @@
+# Fedora policy, not an upstream-provided preset: activation remains opt-in.
+# See MAINTENANCE.md for upstream's explicit enable step and provenance.
+# Format: https://www.freedesktop.org/software/systemd/man/latest/systemd.preset.html
+disable xremap.service
+disable xremap-bridge.service

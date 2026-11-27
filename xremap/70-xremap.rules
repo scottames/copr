@@ -1,0 +1,4 @@
+# Adapted from upstream's uinput rule; provenance is in MAINTENANCE.md.
+# Unlike the direct-user example, use group xremap and omit the uaccess grant.
+# Only the system remapper account gets uinput access from this package.
+SUBSYSTEM=="misc", KERNEL=="uinput", GROUP="xremap", MODE="0660", OPTIONS+="static_node=uinput"
