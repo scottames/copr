@@ -3,8 +3,8 @@
 %global rust_version 1.100.0
 
 Name:           xremap
-%global commit 23e880d441bf968de396c731fdcea18b1af62d9b
-Version:        0.15.18
+%global commit 5708f8fa9a1da9aa27be8559923502925c7f6639
+Version:        0.16.6
 Release:        %autorelease
 Summary:        Linux key remapper with X11 and Wayland desktop support
 License:        MIT
