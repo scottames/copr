@@ -7,8 +7,8 @@
 # https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_as_system_service.md
 set -euo pipefail
 
-if [[ ${XREMAP_TEST_DISPOSABLE:-} != 1 || $EUID != 0 || $# != 1 ]]; then
-  echo "Usage (root, disposable container only): XREMAP_TEST_DISPOSABLE=1 bash $0 RPM" >&2
+if [[ ${PACKAGE_TEST_DISPOSABLE:-} != 1 || $EUID != 0 || $# != 1 ]]; then
+  echo "Usage (root, disposable container only): PACKAGE_TEST_DISPOSABLE=1 bash $0 RPM" >&2
   exit 2
 fi
 
@@ -49,6 +49,7 @@ for path in \
   /usr/share/zsh/site-functions/_xremap \
   /usr/share/fish/vendor_completions.d/xremap.fish \
   /usr/share/doc/xremap/README.fedora \
+  /usr/share/doc/xremap/MAINTENANCE.md \
   /usr/share/doc/xremap/doc/running_as_system_service.md; do
   test -s "$path"
   test "$(stat -c '%U:%G' "$path")" = root:root

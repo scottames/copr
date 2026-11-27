@@ -1,6 +1,6 @@
 # Fedora adaptation of upstream's system-service example (Documentation below).
 # Differences: multi-user target, config guard, quiet logs, and delayed failure restart.
-# See README.md for the upstream file map and administrator-owned socket setup.
+# See MAINTENANCE.md for provenance and README.md for administrator-owned socket setup.
 [Unit]
 Description=Xremap system input remapper
 Documentation=https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_as_system_service.md

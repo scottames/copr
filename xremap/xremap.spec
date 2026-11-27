@@ -1,18 +1,14 @@
 # Build reference: upstream's full feature definition and source-install guide.
 # https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/Cargo.toml
 # https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/development/install_from_source.md
-# Fedora-specific source files and differences are mapped in README.md.
+# Fedora-specific source files and differences are mapped in MAINTENANCE.md.
 %global commit 23e880d441bf968de396c731fdcea18b1af62d9b
 %global cargo_args --release --locked --no-default-features --features full
-%if 0%{?fedora} == 44
-%global rust_version 1.99.1
-%else
 %global rust_version 1.100.0
-%endif
 
 Name:           xremap
 Version:        0.15.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Linux key remapper with X11 and Wayland desktop support
 License:        MIT
 URL:            https://github.com/xremap/xremap
@@ -29,6 +25,7 @@ Source6:        xremap-sysusers.conf
 Source7:        xremap-modules.conf
 Source8:        70-xremap.rules
 Source9:        80-xremap.preset
+Source10:       MAINTENANCE.md
 ExclusiveArch:  x86_64 aarch64
 BuildRequires:  cargo = %{rust_version}
 BuildRequires:  rust = %{rust_version}
@@ -52,6 +49,7 @@ echo '4aa9bb61b6f595b70de9d2a0494dc37b0110ffc02cdd3cda4e50de04347854d9  Cargo.lo
 cp %{SOURCE1} Cargo.lock
 echo 'b31fb7e3344b1e8c34118bbfb8eb0b294c346845ef15fa1ba9f183c12a5152b8  Cargo.lock' | sha256sum -c -
 cp %{SOURCE2} README.fedora
+cp %{SOURCE10} MAINTENANCE.md
 
 %build
 cargo build %{cargo_args} --bin xremap
@@ -106,7 +104,7 @@ fi
 
 %files
 %license LICENSE
-%doc README.md README.fedora doc example/config.yml example/emacs.yml
+%doc README.md README.fedora MAINTENANCE.md doc example/config.yml example/emacs.yml
 %{_bindir}/xremap
 %{_unitdir}/xremap.service
 %{_userunitdir}/xremap.service
@@ -122,6 +120,10 @@ fi
 %{_datadir}/fish/vendor_completions.d/xremap.fish
 
 %changelog
+* Fri Nov 27 2026 Scott Ames - 0.15.18-3
+- Use the available pinned Rust toolchain on Fedora 44.
+- Split user and maintainer documentation.
+
 * Sat Nov 21 2026 Scott Ames - 0.15.18-2
 - Build the full desktop variant for x86_64 and aarch64.
 - Include optional system and user services, device setup, and completions.

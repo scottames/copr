@@ -3,12 +3,11 @@ name: build changed spec files
 on:
   pull_request:
     paths:
-      - "*/*.spec"
-      - "xremap/**"
-      - ".github/spec-build-targets.json"
-      - ".dagger/**"
-      - "dagger.json"
-      - ".github/workflows/pr_build-changed-spec-files.yaml"
+      - "*/**"
+      - .github/spec-build-targets.json
+      - .dagger/**
+      - dagger.json
+      - .github/workflows/pr_build-changed-spec-files.yaml
 permissions:
   contents: read
   pull-requests: read
@@ -21,21 +20,23 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      # yamllint disable-line rule:line-length
-      has-changes: ${{ steps.changed-files.outputs.any_changed == 'true' || steps.changed-build-targets.outputs.any_changed == 'true' || steps.changed-build-tooling.outputs.any_changed == 'true' }}
+      has-changes: ${{ steps.set-matrix.outputs.has-changes }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - name: changed spec files
+      - name: Test package source selection
+        run: bash scripts/test-changed-package-specs.sh
+      - name: changed package files
         id: changed-files
         # https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised
         # yamllint disable-line rule:line-length
         uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad # v47
         with:
-          files: |
-            **/*.spec
-            xremap/**
+          json: true
+          escape_json: false
+          safe_output: false
+          output_renamed_files_as_deleted_and_added: true
       - name: changed build targets
         id: changed-build-targets
         # https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised
@@ -53,27 +54,28 @@ jobs:
             .dagger/**
             dagger.json
             .github/workflows/pr_build-changed-spec-files.yaml
+            scripts/changed-package-specs.sh
+            scripts/test-changed-package-specs.sh
       - name: Set matrix output
         id: set-matrix
         # yamllint disable rule:line-length
+        env:
+          CHANGED_FILES_JSON: ${{ steps.changed-files.outputs.all_changed_and_modified_files }}
+          BUILD_TARGETS_CHANGED: ${{ steps.changed-build-targets.outputs.any_modified }}
+          BUILD_TOOLING_CHANGED: ${{ steps.changed-build-tooling.outputs.any_modified }}
         run: |
           build_targets_json=$(jq -c . .github/spec-build-targets.json)
           fedora_versions=$(jq -r '.default_fedora_versions | join(" ")' <<< "$build_targets_json")
           spec_fedora_versions_json=$(jq -c '.spec_overrides' <<< "$build_targets_json")
-          build_targets_changed='${{ steps.changed-build-targets.outputs.any_changed }}'
-          build_tooling_changed='${{ steps.changed-build-tooling.outputs.any_changed }}'
-
-          if [ "$build_targets_changed" = "true" ]; then
+          if [ "$BUILD_TARGETS_CHANGED" = "true" ]; then
             files=$(git ls-files '*/*.spec')
           else
-            files='${{ steps.changed-files.outputs.all_changed_files }}'
-            if [ "$build_tooling_changed" = "true" ]; then
+            files=$(jq -r '.[]' <<< "$CHANGED_FILES_JSON" | bash scripts/changed-package-specs.sh)
+            if [ "$BUILD_TOOLING_CHANGED" = "true" ]; then
               # Exercise the shared builder even when no spec changed.
-              files=$(printf '%s\n' $files mise/mise.spec | sort -u)
+              files=$(printf '%s\n' "$files" mise/mise.spec | sort -u)
             fi
           fi
-          # Changes to xremap's local sources must rebuild its spec too.
-          files=$(tr ' ' '\n' <<< "$files" | sed 's|^xremap/.*|xremap/xremap.spec|' | sort -u)
           include_array='[]'
 
           if [ -n "$files" ]; then
@@ -106,6 +108,7 @@ jobs:
 
           matrix_json=$(jq -cn --argjson inc "$include_array" '{"include": $inc}')
           echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+          echo "has-changes=$(jq -r 'length > 0' <<< "$include_array")" >> "$GITHUB_OUTPUT"
   # yamllint enable rule:line-length
   build-spec:
     name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }}, ${{ matrix.os }})
@@ -122,7 +125,16 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         with:
-          version: "0.21.12"
+          version: 0.21.12
           verb: call
           # yamllint disable-line rule:line-length
           args: build-spec-file --spec-file "${{ matrix.spec-file }}" --fedora-version "${{ matrix.fedora-version }}"
+      - name: Validate package lifecycle
+        if: matrix.spec-file == 'xremap/xremap.spec'
+        # yamllint disable-line rule:line-length
+        uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
+        with:
+          version: 0.21.12
+          verb: call
+          # yamllint disable-line rule:line-length
+          args: test-package --spec-file "${{ matrix.spec-file }}" --fedora-version "${{ matrix.fedora-version }}" --test-script xremap/test-package.sh --package-name xremap
