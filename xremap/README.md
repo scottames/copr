@@ -10,6 +10,11 @@ The RPM includes optional system and user services, device setup, shell
 completions, upstream documentation, and examples. **Services are disabled on
 installation. No active mappings or desktop-user permission grants are installed.**
 
+The matching upstream documentation is installed as
+`/usr/share/doc/xremap/README.md` and `/usr/share/doc/xremap/doc/`.
+Web links below follow **latest upstream documentation**, which may differ
+from your installed release.
+
 ## Install
 
 ```sh
@@ -34,8 +39,8 @@ and [troubleshooting guide][setup-troubleshooting]. Choose a startup mode:
 | System service with desktop bridge — recommended | [System-service setup][setup-system] | System `xremap.service`; user `xremap-bridge.service` | `/etc/xremap/config.yml` |
 | Direct user service | [User-service setup][setup-user] and [device permissions][setup-permissions] | User `xremap.service` | `~/.config/xremap/config.yml` |
 
-These guides match the packaged release. Apply the RPM-specific differences
-below rather than repeating upstream's manual installation steps.
+Apply the RPM-specific differences below rather than repeating upstream's
+manual installation steps.
 
 ### What the RPM already supplies
 
@@ -118,11 +123,11 @@ loaded uinput module need not disappear when their configuration is removed.
 For build controls, dependency review, tests, and upstream provenance, see
 [Package maintenance](MAINTENANCE.md).
 
-[setup-config]: https://github.com/xremap/xremap/blob/v0.15.18/README.md#configuration
-[setup-cli]: https://github.com/xremap/xremap/blob/v0.15.18/README.md#commandline-arguments
-[setup-troubleshooting]: https://github.com/xremap/xremap/blob/v0.15.18/doc/troubleshooting.md
-[setup-system]: https://github.com/xremap/xremap/blob/v0.15.18/doc/running_as_system_service.md
-[setup-user]: https://github.com/xremap/xremap/blob/v0.15.18/doc/running_as_user_service.md
-[setup-permissions]: https://github.com/xremap/xremap/blob/v0.15.18/doc/running_without_sudo.md
-[setup-reboot]: https://github.com/xremap/xremap/blob/v0.15.18/doc/running_without_sudo.md#reboot-or-try-to-run-right-away-without-rebooting
-[setup-groups]: https://github.com/xremap/xremap/blob/v0.15.18/doc/running_as_system_service.md#create-groups-for-socket-feature-optional
+[setup-config]: https://github.com/xremap/xremap/blob/master/README.md#configuration
+[setup-cli]: https://github.com/xremap/xremap/blob/master/README.md#commandline-arguments
+[setup-troubleshooting]: https://github.com/xremap/xremap/blob/master/doc/troubleshooting.md
+[setup-system]: https://github.com/xremap/xremap/blob/master/doc/running_as_system_service.md
+[setup-user]: https://github.com/xremap/xremap/blob/master/doc/running_as_user_service.md
+[setup-permissions]: https://github.com/xremap/xremap/blob/master/doc/running_without_sudo.md
+[setup-reboot]: https://github.com/xremap/xremap/blob/master/doc/running_without_sudo.md#reboot-or-try-to-run-right-away-without-rebooting
+[setup-groups]: https://github.com/xremap/xremap/blob/master/doc/running_as_system_service.md#create-groups-for-socket-feature-optional

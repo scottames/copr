@@ -1,22 +1,17 @@
-# Build reference: upstream's full feature definition and source-install guide.
-# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/Cargo.toml
-# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/development/install_from_source.md
-# Fedora-specific source files and differences are mapped in MAINTENANCE.md.
-%global commit 23e880d441bf968de396c731fdcea18b1af62d9b
+# Source controls live here; provenance and update procedures are in MAINTENANCE.md.
 %global cargo_args --release --locked --no-default-features --features full
 %global rust_version 1.100.0
 
 Name:           xremap
+%global commit 23e880d441bf968de396c731fdcea18b1af62d9b
 Version:        0.15.18
-Release:        3%{?dist}
+Release:        %autorelease -b4
 Summary:        Linux key remapper with X11 and Wayland desktop support
 License:        MIT
 URL:            https://github.com/xremap/xremap
 Source0:        https://codeload.github.com/xremap/xremap/tar.gz/%{commit}#/%{name}-%{commit}.tar.gz
-# Based on upstream's lockfile; only rustix 1.1.5 -> 1.1.6 differs.
-# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/Cargo.lock
-# https://rustsec.org/advisories/RUSTSEC-2026-0486.html
-Source1:        Cargo.lock
+# patch-guard: remove-after-version=0.15.18 reason=rustix-security-fix
+Patch0:         xremap-rustix.patch
 Source2:        README.md
 Source3:        xremap.service
 Source4:        xremap-user.service
@@ -43,11 +38,9 @@ Services and device-access setup are included but services are not enabled
 on installation. Configure a service mode and mappings before starting xremap.
 
 %prep
-echo '57580f9ee21215f8c8ee36c741cf9ef46aefad8d22c5938491f35e7398127216  %{SOURCE0}' | sha256sum -c -
-%setup -q -n %{name}-%{commit}
-echo '4aa9bb61b6f595b70de9d2a0494dc37b0110ffc02cdd3cda4e50de04347854d9  Cargo.lock' | sha256sum -c -
-cp %{SOURCE1} Cargo.lock
-echo 'b31fb7e3344b1e8c34118bbfb8eb0b294c346845ef15fa1ba9f183c12a5152b8  Cargo.lock' | sha256sum -c -
+%autosetup -p1 -n %{name}-%{commit}
+# A version-only bot update must not build the previous source commit.
+grep -Fx 'version = "%{version}"' Cargo.toml
 cp %{SOURCE2} README.fedora
 cp %{SOURCE10} MAINTENANCE.md
 
@@ -120,6 +113,10 @@ fi
 %{_datadir}/fish/vendor_completions.d/xremap.fish
 
 %changelog
+* Fri Nov 27 2026 Scott Ames - 0.15.18-4
+- Use a guarded lockfile patch and centralize source update controls.
+- Keep setup documentation matched to the installed package.
+
 * Fri Nov 27 2026 Scott Ames - 0.15.18-3
 - Use the available pinned Rust toolchain on Fedora 44.
 - Split user and maintainer documentation.

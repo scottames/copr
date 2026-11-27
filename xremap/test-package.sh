@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 # Installs/removes packages and writes /etc. Run only in a disposable Fedora container.
 # Fedora-authored package checks, not a copy of upstream's device test suite.
-# Upstream CLI contracts exercised here (desktop list and config validation):
-# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/README.md#commandline-arguments
-# Service setup reference:
-# https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_as_system_service.md
+# Upstream CLI contracts and service setup provenance are in MAINTENANCE.md.
 set -euo pipefail
 
 if [[ ${PACKAGE_TEST_DISPOSABLE:-} != 1 || $EUID != 0 || $# != 1 ]]; then
@@ -55,6 +52,13 @@ for path in \
   test "$(stat -c '%U:%G' "$path")" = root:root
 done
 rpm -V xremap
+# Every packaged Documentation= URI must resolve without an upstream web request.
+for unit in /usr/lib/systemd/system/xremap.service \
+  /usr/lib/systemd/user/xremap.service /usr/lib/systemd/user/xremap-bridge.service; do
+  while IFS= read -r uri; do
+    test -s "${uri#file://}"
+  done < <(sed -n 's/^Documentation=//p' "$unit")
+done
 udevadm verify /usr/lib/udev/rules.d/70-xremap.rules
 systemd-analyze --man=no verify /usr/lib/systemd/system/xremap.service
 install -d -m 0700 "$workdir/runtime"

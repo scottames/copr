@@ -3,7 +3,8 @@
 # See Documentation below and MAINTENANCE.md for the packaging choices.
 [Unit]
 Description=Xremap desktop bridge
-Documentation=https://github.com/xremap/xremap/blob/23e880d441bf968de396c731fdcea18b1af62d9b/doc/running_as_system_service.md#other-desktops-than-gnome
+Documentation=file:///usr/share/doc/xremap/README.fedora
+Documentation=file:///usr/share/doc/xremap/doc/running_as_system_service.md
 PartOf=graphical-session.target
 After=graphical-session.target
 Conflicts=xremap.service

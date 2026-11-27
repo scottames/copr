@@ -10,6 +10,12 @@
   automerge: true,
   packageRules: [
     {
+      description: 'Do not automatically trust retagged xremap releases',
+      matchPackageNames: ['xremap/xremap'],
+      matchUpdateTypes: ['digest'],
+      enabled: false,
+    },
+    {
       matchPackageNames: ['herdrdev/herdr-app', 'herdrdev/herdr-core'],
       groupName: 'Herdr RPMs',
     },
@@ -110,6 +116,18 @@
     },
   },
   customManagers: [
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/^xremap/xremap\\.spec$/'],
+      matchStrings: [
+        '%global commit (?<currentDigest>[0-9a-f]{40})\\nVersion:\\s*(?<currentValue>\\S+)\\nRelease:[^\\n]+',
+      ],
+      autoReplaceStringTemplate: '%global commit {{{newDigest}}}\nVersion:        {{{newValue}}}\nRelease:        %autorelease',
+      depNameTemplate: 'xremap/xremap',
+      datasourceTemplate: 'github-tags',
+      extractVersionTemplate: '^v(?<version>\\d+\\.\\d+\\.\\d+)$',
+      versioningTemplate: 'semver',
+    },
     // latest.json has no old digests. Track version+sha256 as one SemVer value,
     // then write its parts together. Build metadata does not affect version order.
     {

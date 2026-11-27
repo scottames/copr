@@ -110,6 +110,41 @@ jobs:
           echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
           echo "has-changes=$(jq -r 'length > 0' <<< "$include_array")" >> "$GITHUB_OUTPUT"
   # yamllint enable rule:line-length
+  audit-xremap:
+    name: Audit xremap dependencies
+    needs: detect-changes
+    if: contains(needs.detect-changes.outputs.matrix, 'xremap/xremap.spec')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Read pinned source revision
+        id: source
+        run: |
+          commit=$(awk '$1 == "%global" && $2 == "commit" {print $3}' xremap/xremap.spec)
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]]
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+      - name: Check out pinned upstream source
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: xremap/xremap
+          ref: ${{ steps.source.outputs.commit }}
+          path: .audit-xremap
+          persist-credentials: false
+      - name: Apply downstream patches
+        run: |
+          awk '/^Patch[0-9]*:/ {print $2}' xremap/xremap.spec |
+            while IFS= read -r patch_file; do
+              patch --batch --forward --fuzz=0 -d .audit-xremap -p1 < "xremap/$patch_file"
+            done
+          test -s .audit-xremap/Cargo.lock
+      - name: Install standard auditor
+        run: cargo install cargo-audit --locked
+      - name: Audit locked dependencies
+        working-directory: xremap
+        # ponytail: gate advisories, not yank metadata; RPM builds check locked crates.
+        run: cargo audit --deny warnings --no-yanked --file ../.audit-xremap/Cargo.lock
   build-spec:
     name: build ${{ matrix.spec-file }} (F${{ matrix.fedora-version }}, ${{ matrix.os }})
     needs: detect-changes

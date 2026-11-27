@@ -1,0 +1,10 @@
+[advisories]
+# These are accepted unmaintained-crate advisories, not vulnerability exceptions.
+# Keep upstream YAML/zbus support until upstream replaces these dependencies.
+ignore = [
+  "RUSTSEC-2024-0449", # unsafe-libyaml
+  "RUSTSEC-2026-0371", # zbus_names
+  "RUSTSEC-2026-0370", # zvariant
+  "RUSTSEC-2026-0372", # zvariant_derive
+]
+# ponytail: acknowledge advisory IDs, not crate versions that need routine refresh.

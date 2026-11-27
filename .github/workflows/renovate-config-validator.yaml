@@ -12,6 +12,7 @@ on:
       - anomalyco/hokum.spec
       - herdrdev/herdr-app.spec
       - herdrdev/herdr-core.spec
+      - xremap/xremap.spec
   push:
     branches:
       - main
@@ -22,7 +23,8 @@ on:
       - anomalyco/hokum.spec
       - herdrdev/herdr-app.spec
       - herdrdev/herdr-core.spec
-  workflow_dispatch:
+      - xremap/xremap.spec
+  workflow_dispatch: {}
 permissions:
   contents: read
 jobs:
