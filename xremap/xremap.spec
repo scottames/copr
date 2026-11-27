@@ -5,7 +5,7 @@
 Name:           xremap
 %global commit 23e880d441bf968de396c731fdcea18b1af62d9b
 Version:        0.15.18
-Release:        %autorelease -b4
+Release:        %autorelease
 Summary:        Linux key remapper with X11 and Wayland desktop support
 License:        MIT
 URL:            https://github.com/xremap/xremap
@@ -113,14 +113,4 @@ fi
 %{_datadir}/fish/vendor_completions.d/xremap.fish
 
 %changelog
-* Fri Nov 27 2026 Scott Ames - 0.15.18-4
-- Use a guarded lockfile patch and centralize source update controls.
-- Keep setup documentation matched to the installed package.
-
-* Fri Nov 27 2026 Scott Ames - 0.15.18-3
-- Use the available pinned Rust toolchain on Fedora 44.
-- Split user and maintainer documentation.
-
-* Sat Nov 21 2026 Scott Ames - 0.15.18-2
-- Build the full desktop variant for x86_64 and aarch64.
-- Include optional system and user services, device setup, and completions.
+%autochangelog
